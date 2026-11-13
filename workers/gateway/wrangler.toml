@@ -8,7 +8,7 @@ workers_dev = true
 [[d1_databases]]
 binding = "DB"
 database_name = "stark-report"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "12c24b47-cbcd-4f43-9314-b46a805c6fd6"
 # マイグレーションは Next.js 側の drizzle/ ディレクトリを共有する
 migrations_dir = "../../drizzle"
 
