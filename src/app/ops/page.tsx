@@ -54,8 +54,8 @@ async function loadOps() {
     db
       .select({
         org: organizations,
-        reports: sql<number>`(SELECT COUNT(*) FROM work_reports r WHERE r.org_id = ${organizations.id})`,
-        users: sql<number>`(SELECT COUNT(*) FROM memberships m WHERE m.org_id = ${organizations.id})`,
+        reports: sql<number>`(SELECT COUNT(*) FROM work_reports r WHERE r.org_id = "organizations"."id")`,
+        users: sql<number>`(SELECT COUNT(*) FROM memberships m WHERE m.org_id = "organizations"."id")`,
       })
       .from(organizations)
       .orderBy(desc(organizations.createdAt))

@@ -18,8 +18,8 @@ import { monthStartJstMs } from "@/lib/dates";
 export type Report = typeof workReports.$inferSelect;
 export type Photo = typeof workReportPhotos.$inferSelect;
 
-const firstPhotoId = sql<string | null>`(SELECT p.id FROM work_report_photos p WHERE p.report_id = ${workReports.id} ORDER BY p.sort_order, p.created_at LIMIT 1)`;
-const photoCount = sql<number>`(SELECT COUNT(*) FROM work_report_photos p WHERE p.report_id = ${workReports.id})`;
+const firstPhotoId = sql<string | null>`(SELECT p.id FROM work_report_photos p WHERE p.report_id = "work_reports"."id" ORDER BY p.sort_order, p.created_at LIMIT 1)`;
+const photoCount = sql<number>`(SELECT COUNT(*) FROM work_report_photos p WHERE p.report_id = "work_reports"."id")`;
 
 export async function listReports(
   orgId: string,
