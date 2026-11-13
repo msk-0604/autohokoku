@@ -133,7 +133,8 @@ export function ReportPdf({ report, org, photos, layout = "grid", draft = false,
           {org.name}　報告書No. {report.reportNumber}
         </Text>
         <View style={s.header}>
-          <View>{org.logo ? <Image src={org.logo} style={s.logo} /> : <Text style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>{org.name}</Text>}</View>
+          {/* ロゴが無い場合は右側の会社情報だけを出す（会社名の重複表示を避ける） */}
+          <View>{org.logo ? <Image src={org.logo} style={s.logo} /> : null}</View>
           <View style={s.company}>
             <Text style={s.companyName}>{org.name}</Text>
             {(org.postalCode || org.address) && <Text>{[org.postalCode && `〒${org.postalCode}`, org.address].filter(Boolean).join(" ")}</Text>}
