@@ -137,7 +137,7 @@ export default function LandingPage() {
           </div>
           <div className="relative mx-auto flex w-full max-w-lg items-end justify-center gap-4">
             <div className="w-[46%] rounded-[2rem] border-[6px] border-navy-900 bg-navy-900 shadow-2xl">
-              <Image src="/lp/app-editor.png" alt="報告書作成画面（スマートフォン）" width={390} height={664} className="rounded-[1.6rem]" priority />
+              <Image src="/lp/app-editor.png" alt="報告書作成画面（スマートフォン）" width={390} height={844} className="rounded-[1.6rem]" priority />
             </div>
             <div className="w-[54%] -rotate-2 rounded-lg bg-white shadow-2xl ring-1 ring-slate-200">
               <Image src="/lp/sample-photos.png" alt="作業報告書PDFのサンプル（写真ページ）" width={595} height={842} className="rounded-lg" priority />
@@ -186,7 +186,7 @@ export default function LandingPage() {
             ].map(([src, alt]) => (
               <figure key={src} className="mx-auto w-full max-w-[260px]">
                 <div className="rounded-[1.8rem] border-[6px] border-navy-900 bg-navy-900 shadow-xl">
-                  <Image src={src} alt={alt} width={390} height={664} className="rounded-[1.4rem]" />
+                  <Image src={src} alt={alt} width={390} height={844} className="rounded-[1.4rem]" />
                 </div>
                 <figcaption className="mt-3 text-center text-sm font-bold text-slate-700">{alt}</figcaption>
               </figure>

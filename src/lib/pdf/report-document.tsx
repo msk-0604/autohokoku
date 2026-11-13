@@ -46,9 +46,10 @@ const s = StyleSheet.create({
   logo: { maxWidth: 150, maxHeight: 46, objectFit: "contain" },
   company: { textAlign: "right", fontSize: 8.5, color: "#334155", maxWidth: 260 },
   companyName: { fontSize: 11, fontWeight: 700, color: NAVY, marginBottom: 2 },
-  titleWrap: { borderBottomWidth: 2, borderBottomColor: NAVY, paddingBottom: 6, marginBottom: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
-  title: { fontSize: 20, fontWeight: 700, color: NAVY, letterSpacing: 4 },
-  meta: { fontSize: 8.5, color: "#334155", textAlign: "right" },
+  // 題名は1行で独立させ、行の高さを明示して下線と重ならないようにする
+  titleWrap: { borderBottomWidth: 2, borderBottomColor: NAVY, paddingBottom: 8, marginBottom: 10 },
+  title: { fontSize: 19, fontWeight: 700, color: NAVY, letterSpacing: 2, lineHeight: 1.4 },
+  meta: { fontSize: 8.5, color: "#334155", textAlign: "right", marginBottom: 6 },
   lead: { fontSize: 9.5, marginBottom: 8 },
   table: { borderWidth: 1, borderColor: LINE, borderBottomWidth: 0, marginBottom: 12 },
   row: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: LINE },
@@ -141,13 +142,13 @@ export function ReportPdf({ report, org, photos, layout = "grid", draft = false,
           </View>
         </View>
 
+        <View style={s.meta}>
+          <Text>報告書No. {report.reportNumber}{report.version > 1 ? `（第${report.version}版）` : ""}</Text>
+          <Text>作成日 {issuedAt}</Text>
+          {draft && <Text style={{ color: "#b45309", fontWeight: 700 }}>【下書き・未確定】</Text>}
+        </View>
         <View style={s.titleWrap}>
           <Text style={s.title}>{report.title ? `${report.title}　報告書` : "作業報告書"}</Text>
-          <View style={s.meta}>
-            <Text>報告書No. {report.reportNumber}{report.version > 1 ? `（第${report.version}版）` : ""}</Text>
-            <Text>作成日 {issuedAt}</Text>
-            {draft && <Text style={{ color: "#b45309", fontWeight: 700 }}>【下書き・未確定】</Text>}
-          </View>
         </View>
 
         {report.customerName && <Text style={s.lead}>{report.customerName} 様　下記のとおり作業を実施いたしましたので、ご報告申し上げます。</Text>}
