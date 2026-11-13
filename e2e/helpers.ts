@@ -83,3 +83,28 @@ export async function createSite(page: Page, name: string, customerName: string)
   await expect(page.getByText("現場を登録しました。")).toBeVisible();
   return page.url().split("/app/sites/")[1].split("?")[0];
 }
+
+/** 写真1枚付きの報告書を作成して確定し、ID類を返す */
+export async function createFinalReport(page: Page, opts: { customer: string; customerEmail?: string; site?: string }) {
+  const customerId = await createCustomer(page, opts.customer, opts.customerEmail);
+  const siteName = opts.site ?? `${opts.customer} 現場`;
+  const siteId = await createSite(page, siteName, opts.customer);
+  await page.goto("/app/reports/new");
+  await page.getByLabel("現場").selectOption({ label: siteName });
+  await page.getByRole("button", { name: "作成して写真を撮る" }).click();
+  await expect(page.getByText("報告書を作成しました。")).toBeVisible();
+  const reportId = page.url().split("/app/reports/")[1].split("/")[0];
+  await page.getByTestId("photo-input").setInputFiles("e2e/fixtures/photo1.jpg");
+  await expect(page.getByTestId("photo-list").locator("li")).toHaveCount(1);
+  const photoSrc = await page.getByTestId("photo-list").locator("img").first().getAttribute("src");
+  const photoId = photoSrc!.split("/api/photos/")[1].split("?")[0];
+  await page.getByLabel("作業内容").fill("定期点検を実施しました。");
+  page.once("dialog", (d) => d.accept());
+  await page.getByRole("button", { name: "確定する" }).click();
+  await expect(page.getByText("報告書を確定しました。")).toBeVisible();
+  return { reportId, photoId, siteId, customerId };
+}
+
+export function cookieHeader(cookies: { name: string; value: string }[]) {
+  return cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+}

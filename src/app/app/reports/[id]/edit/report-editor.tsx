@@ -33,9 +33,6 @@ export function ReportEditor({
   const v = state.values ? { ...values, ...state.values } : values;
 
   useEffect(() => {
-    if (state.ok) setDirty(false);
-  }, [state]);
-  useEffect(() => {
     if (!dirty) return;
     const h = (e: BeforeUnloadEvent) => e.preventDefault();
     window.addEventListener("beforeunload", h);
@@ -43,7 +40,7 @@ export function ReportEditor({
   }, [dirty]);
 
   return (
-    <form ref={formRef} action={action} onChange={(e) => (e.target as HTMLElement).getAttribute("name") && setDirty(true)} className="space-y-5">
+    <form ref={formRef} action={action} onSubmit={() => setDirty(false)} onChange={(e) => (e.target as HTMLElement).getAttribute("name") && setDirty(true)} className="space-y-5">
       <div className="sticky top-14 z-10 lg:top-0">
         <FormMessage state={state} />
       </div>

@@ -1,0 +1,18 @@
+{
+  "name": "stark-report-gateway",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "migrate:remote": "wrangler d1 migrations apply stark-report --remote",
+    "migrate:local": "wrangler d1 migrations apply stark-report --local",
+    "backup": "wrangler d1 export stark-report --remote --output=backup-$(date +%Y%m%d-%H%M%S).sql",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261110.1",
+    "typescript": "^5",
+    "wrangler": "^4"
+  }
+}

@@ -49,3 +49,6 @@ next-env.d.ts
 # wrangler
 .wrangler/
 .dev.vars
+
+!.env.example
+node_modules/

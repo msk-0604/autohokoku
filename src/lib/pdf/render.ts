@@ -41,6 +41,7 @@ export async function renderReportPdf(org: Org, report: ReportSnapshot, layout: 
     report,
     layout,
     draft,
+    issuedAtMs: Date.now(),
     photos,
     org: { name: org.name, address: org.address, phone: org.phone, postalCode: org.postalCode, email: org.email, logo },
   }) as unknown as ReactElement<DocumentProps>;

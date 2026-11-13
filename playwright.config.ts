@@ -25,7 +25,7 @@ export default defineConfig({
     launchOptions: process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : undefined,
   },
   projects: [
-    { name: "mobile", use: { ...devices["Pixel 7"] } },
+    { name: "mobile", use: { ...devices["Pixel 7"] }, testIgnore: /desktop\..*spec\.ts/ },
     { name: "desktop", use: { ...devices["Desktop Chrome"] }, testMatch: /desktop\..*spec\.ts/ },
   ],
   webServer: process.env.E2E_BASE_URL

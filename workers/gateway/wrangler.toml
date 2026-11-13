@@ -1,0 +1,19 @@
+# Stark Report データゲートウェイ（D1 + R2）
+# 手順は docs/SETUP.md の「Cloudflare の設定」を参照
+name = "stark-report-gateway"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "stark-report"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+# マイグレーションは Next.js 側の drizzle/ ディレクトリを共有する
+migrations_dir = "../../drizzle"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "stark-report-files"
+
+# GATEWAY_SECRET は `wrangler secret put GATEWAY_SECRET` で設定する（ファイルに書かない）

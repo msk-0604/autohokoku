@@ -251,9 +251,13 @@ export async function deletePhotoAction(photoId: string): Promise<ActionState> {
   return handleAction(async () => {
     const ctx = await writableOrThrow();
     const photo = await loadDraftPhoto(ctx.org.id, photoId);
+    const report = await loadOwnReport(ctx.org.id, photo.reportId);
     await db.delete(workReportPhotos).where(and(eq(workReportPhotos.orgId, ctx.org.id), eq(workReportPhotos.id, photoId)));
-    await deleteObject(photo.storageKey).catch(() => {});
-    if (photo.thumbKey) await deleteObject(photo.thumbKey).catch(() => {});
+    // 一度確定した報告書の写真は、過去の版のPDF（送信済みリンク等）で使うため実体を残す
+    if (report.version === 0) {
+      await deleteObject(photo.storageKey).catch(() => {});
+      if (photo.thumbKey) await deleteObject(photo.thumbKey).catch(() => {});
+    }
     await audit({ orgId: ctx.org.id, userId: ctx.user.id, action: "photo.delete", targetType: "photo", targetId: photoId });
     return { ok: true };
   }, "photo.delete");

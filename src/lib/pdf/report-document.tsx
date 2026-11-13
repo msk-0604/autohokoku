@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text -- react-pdf の Image は alt を持たない */
 import path from "node:path";
 import { Document, Font, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import type { ReportSnapshot } from "@/lib/data/reports";
@@ -118,11 +119,11 @@ function PhotoHead({ index, photo }: { index: number; photo: PdfPhoto }) {
   );
 }
 
-export function ReportPdf({ report, org, photos, layout = "grid", draft = false }: { report: ReportSnapshot; org: PdfOrg; photos: PdfPhoto[]; layout?: PdfLayout; draft?: boolean }) {
+export function ReportPdf({ report, org, photos, layout = "grid", draft = false, issuedAtMs }: { report: ReportSnapshot; org: PdfOrg; photos: PdfPhoto[]; layout?: PdfLayout; draft?: boolean; issuedAtMs: number }) {
   registerFonts();
   const time = report.startTime || report.endTime ? `${report.startTime ?? ""} 〜 ${report.endTime ?? ""}${workDuration(report.startTime, report.endTime) ? `（${workDuration(report.startTime, report.endTime)}）` : ""}` : "";
   const customer = [report.customerName, report.customerCompany && report.customerCompany !== report.customerName ? report.customerCompany : null].filter(Boolean).join(" / ");
-  const issuedAt = formatDate(report.finalizedAt ?? Date.now());
+  const issuedAt = formatDate(report.finalizedAt ?? issuedAtMs);
   return (
     <Document title={`作業報告書 ${report.reportNumber}`} author={org.name} creator={org.name} producer={org.name} language="ja">
       <Page size="A4" orientation="portrait" style={s.page}>

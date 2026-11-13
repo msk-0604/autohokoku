@@ -322,6 +322,8 @@ export const shareLinks = sqliteTable(
       .notNull()
       .references(() => workReports.id, { onDelete: "cascade" }),
     tokenHash: text("token_hash").notNull(),
+    /** 送信時点の版。リンク先ではこの版の内容を表示する */
+    reportVersion: integer("report_version").notNull(),
     expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
     revokedAt: integer("revoked_at", { mode: "timestamp_ms" }),
     downloadCount: integer("download_count").notNull().default(0),

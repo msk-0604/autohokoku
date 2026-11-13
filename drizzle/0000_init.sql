@@ -165,6 +165,7 @@ CREATE TABLE `share_links` (
 	`org_id` text NOT NULL,
 	`report_id` text NOT NULL,
 	`token_hash` text NOT NULL,
+	`report_version` integer NOT NULL,
 	`expires_at` integer NOT NULL,
 	`revoked_at` integer,
 	`download_count` integer DEFAULT 0 NOT NULL,
