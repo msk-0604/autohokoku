@@ -76,6 +76,8 @@ export async function openPortalAction(_: ActionState): Promise<ActionState> {
       customer: ctx.org.stripeCustomerId,
       return_url: `${env.APP_URL}/app/billing`,
       locale: "ja",
+      // 同じ Stripe アカウントの他サービスと分けるため、専用のポータル設定を明示する
+      ...(env.STRIPE_PORTAL_CONFIGURATION_ID ? { configuration: env.STRIPE_PORTAL_CONFIGURATION_ID } : {}),
     });
     await audit({ orgId: ctx.org.id, userId: ctx.user.id, action: "billing.portal_opened" });
     redirect(session.url);

@@ -41,7 +41,11 @@ export async function syncSubscription(sub: Stripe.Subscription, eventCreated: n
   const customerId = idOf(sub.customer);
   const orgId = await findOrgId({ orgId: sub.metadata?.org_id, customerId });
   if (!orgId) {
-    await notifyAdmin("Stripe: 会社が特定できないサブスクリプション", `subscription=${sub.id} customer=${customerId}`);
+    // 同じ Stripe アカウントの別サービス（別商品）の契約は無視する
+    const isOurPrice = sub.items?.data?.some((i) => i.price?.id === env.STRIPE_PRICE_ID);
+    if (isOurPrice || sub.metadata?.org_id) {
+      await notifyAdmin("Stripe: 会社が特定できないサブスクリプション", `subscription=${sub.id} customer=${customerId}`);
+    }
     return;
   }
   const eventAt = new Date(eventCreated * 1000);

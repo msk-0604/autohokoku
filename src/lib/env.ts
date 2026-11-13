@@ -21,6 +21,7 @@ const schema = z.object({
   STRIPE_SECRET_KEY: z.string().default(""),
   STRIPE_WEBHOOK_SECRET: z.string().default(""),
   STRIPE_PRICE_ID: z.string().default(""),
+  STRIPE_PORTAL_CONFIGURATION_ID: z.string().default(""),
   STRIPE_AUTOMATIC_TAX: z.enum(["true", "false"]).default("false"),
 
   CRON_SECRET: z.string().default(""),
