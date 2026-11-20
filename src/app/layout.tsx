@@ -12,7 +12,6 @@ export const metadata: Metadata = {
     "スマホで写真を撮って作業内容を入力するだけ。きれいな写真付き作業報告書PDFが数分で完成し、そのままお客様へメール送信できます。月額7,480円（税込）・14日間無料体験。",
   applicationName: SERVICE_NAME,
   verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } : undefined,
-  icons: { icon: "/icon.svg", apple: "/icon.svg" },
 };
 
 export const viewport: Viewport = {
