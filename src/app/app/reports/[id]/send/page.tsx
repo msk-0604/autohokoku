@@ -1,13 +1,11 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { randomUUID } from "node:crypto";
-import { ChevronLeft } from "lucide-react";
 import { requireAuth } from "@/lib/auth/dal";
 import { accessOf } from "@/lib/billing/access";
 import { getReport, listEmailLogs } from "@/lib/data/reports";
 import { hasSentTo } from "@/lib/report-email";
 import { formatDate, formatDateTime } from "@/lib/dates";
-import { Badge, Card, CardHeader, PageHeader } from "@/components/ui";
+import { BackLink, Badge, Card, CardHeader, PageHeader } from "@/components/ui";
 import { SendForm } from "./send-form";
 import { RetryButton } from "./retry-button";
 
@@ -22,7 +20,7 @@ export default async function SendReportPage({ params }: { params: Promise<{ id:
   const title = r.report.title || "作業報告書";
   const recipient = r.customer ? `${r.customer.companyName && r.customer.companyName !== r.customer.name ? `${r.customer.companyName}\n` : ""}${r.customer.name} 様` : "ご担当者様";
   const subject = `【${title}】${r.site?.name ? `${r.site.name} ` : ""}${formatDate(r.report.workDate)}（${ctx.org.name}）`;
-  const body = `${recipient}\n\nいつもお世話になっております。\n${ctx.org.name}の${ctx.user.name}です。\n\n${formatDate(r.report.workDate)}に実施した作業の報告書をお送りいたします。\nご確認のほど、よろしくお願いいたします。\n\n${ctx.org.name}\n${ctx.org.phone ? `TEL ${ctx.org.phone}\n` : ""}`;
+  const body = `${recipient}\n\nいつもお世話になっております。\n${ctx.org.name === ctx.user.name ? ctx.user.name : `${ctx.org.name}の${ctx.user.name}`}です。\n\n${formatDate(r.report.workDate)}に実施した作業の報告書をお送りいたします。\nご確認のほど、よろしくお願いいたします。\n\n${ctx.org.name}\n${ctx.org.phone ? `TEL ${ctx.org.phone}\n` : ""}`;
   const knownAddresses = to ? { [to]: await hasSentTo(ctx.org.id, to) } : {};
 
   return (
@@ -30,13 +28,9 @@ export default async function SendReportPage({ params }: { params: Promise<{ id:
       <PageHeader
         title="報告書をメールで送信"
         description={`${r.report.reportNumber}${r.report.version > 1 ? `（第${r.report.version}版）` : ""}`}
-        back={
-          <Link href={`/app/reports/${id}`} className="mb-2 inline-flex items-center gap-1 text-sm text-slate-600">
-            <ChevronLeft className="size-4" /> 報告書に戻る
-          </Link>
-        }
+        back={<BackLink href={`/app/reports/${id}`}>報告書に戻る</BackLink>}
       />
-      <div className="grid gap-5 lg:grid-cols-[1fr_20rem]">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <Card className="p-4 sm:p-6">
           <SendForm reportId={id} requestKey={randomUUID()} defaults={{ to, subject, body }} knownAddresses={knownAddresses} />
         </Card>
@@ -53,7 +47,7 @@ export default async function SendReportPage({ params }: { params: Promise<{ id:
                   </Badge>
                 </div>
                 <p className="text-xs text-slate-500">
-                  {formatDateTime(log.createdAt)}・{log.mode === "link" ? "リンク" : "PDF添付"}・{sentByName ?? ""}
+                  {formatDateTime(log.createdAt)}　{log.mode === "link" ? "リンク" : "PDF添付"}　{sentByName ?? ""}
                 </p>
                 {log.status !== "sent" && (
                   <>

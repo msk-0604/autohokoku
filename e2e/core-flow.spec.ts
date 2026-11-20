@@ -46,8 +46,8 @@ test("スマホで写真付き報告書を作成し、日本語PDFを出力で�
   await page.getByRole("button", { name: "閉じる" }).click();
 
   // 内容入力 → 下書き保存
-  await page.getByLabel("開始時間").fill("09:00");
-  await page.getByLabel("終了時間").fill("17:30");
+  await page.getByLabel("開始時刻").fill("09:00");
+  await page.getByLabel("終了時刻").fill("17:30");
   await page.getByLabel("作業内容").fill("室外機・室内機の撤去および新規設置を行いました。");
   await page.getByRole("button", { name: "＋動作確認を行い、正常に稼働することを確認しました。" }).click();
   await page.getByLabel("使用材料").fill("冷媒配管 2分3分 ×4m");
@@ -81,6 +81,6 @@ test("スマホで写真付き報告書を作成し、日本語PDFを出力で�
 
   // ダッシュボードの集計
   await page.goto("/app");
-  await expect(page.getByTestId("stat-完成済み")).toContainText("1");
-  await expect(page.getByTestId("stat-今月の報告書")).toContainText("1");
+  await expect(page.getByTestId("stat-finals")).toContainText("1");
+  await expect(page.getByTestId("stat-monthly")).toContainText("1");
 });

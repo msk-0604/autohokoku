@@ -51,11 +51,11 @@ export function SendForm({ reportId, requestKey, defaults, knownAddresses }: { r
             <div className="grid gap-2 sm:grid-cols-2">
               {(
                 [
-                  ["link", "ダウンロードリンク（おすすめ）", "14日間有効な安全なリンクを送ります。写真が多くても届きます。", Link2],
+                  ["link", "ダウンロード用リンク（おすすめ）", "14日間有効なリンクを送ります。写真が多くても確実に届きます。", Link2],
                   ["attachment", "PDFを添付", "メールにPDFを添付します（10MBを超える場合はリンクに切り替わります）。", Paperclip],
                 ] as const
               ).map(([v, label, desc, Icon]) => (
-                <label key={v} className={cn("flex cursor-pointer gap-3 rounded-xl border p-3", mode === v ? "border-brand-600 bg-brand-50" : "border-slate-300 bg-white")}>
+                <label key={v} className={cn("flex cursor-pointer gap-3 rounded-lg border p-3", mode === v ? "border-brand-600 bg-brand-50" : "border-slate-300 bg-white")}>
                   <input type="radio" name="mode-choice" value={v} checked={mode === v} onChange={() => setMode(v)} className="mt-1 size-4 accent-brand-600" />
                   <span>
                     <span className="flex items-center gap-1.5 font-bold text-navy-900">
@@ -73,7 +73,7 @@ export function SendForm({ reportId, requestKey, defaults, knownAddresses }: { r
         </>
       ) : (
         <>
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm">
             <dl className="space-y-2">
               <div>
                 <dt className="text-xs font-bold text-slate-500">宛先</dt>
@@ -96,7 +96,7 @@ export function SendForm({ reportId, requestKey, defaults, knownAddresses }: { r
             </dl>
           </div>
           {isNewAddress && (
-            <label className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+            <label className="flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
               <input type="checkbox" name="confirmNewAddress" className="mt-0.5 size-5 accent-amber-600" />
               <span>
                 <span className="flex items-center gap-1 font-bold">
@@ -106,16 +106,14 @@ export function SendForm({ reportId, requestKey, defaults, knownAddresses }: { r
               </span>
             </label>
           )}
-          <label className="flex items-start gap-3 text-sm">
-            <input type="checkbox" name="confirmed" className="mt-0.5 size-5 accent-brand-600" />
-            <span>上記の内容で送信します（送信後は取り消せません）</span>
-          </label>
-          {state.fieldErrors?.confirmed && <p className="text-sm text-red-600">{state.fieldErrors.confirmed[0]}</p>}
+          {/* 確認画面で「この内容で送信する」を押すこと自体を送信内容の確認とする */}
+          <input type="hidden" name="confirmed" value="on" />
+          <p className="text-sm text-slate-600">送信後は取り消せません。宛先と内容をもう一度ご確認ください。</p>
           <div className="flex flex-col-reverse gap-2 sm:flex-row">
             <Button type="button" variant="secondary" size="lg" onClick={() => setStep("edit")}>
               <ArrowLeft className="size-4" /> 修正する
             </Button>
-            <SubmitButton size="lg" className="flex-1" pendingText="送信しています…">
+            <SubmitButton size="lg" className="flex-1" pendingText="送信しています…" data-testid="send-submit">
               <Mail className="size-5" /> この内容で送信する
             </SubmitButton>
           </div>

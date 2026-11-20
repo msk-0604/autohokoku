@@ -11,7 +11,7 @@ test("確定した報告書を、確認画面を経てお客様へメール送�
   await page.getByRole("button", { name: "送信内容を確認する" }).click();
   await expect(page.getByTestId("confirm-to")).toHaveText(customerEmail);
 
-  // 確認チェックなしでは送信できない
+  // 初回の宛先は、宛先確認のチェックなしでは送信できない
   await page.getByRole("button", { name: "この内容で送信する" }).click();
   await expect(page.getByRole("alert").first()).toBeVisible();
   expect(mailsTo(customerEmail)).toHaveLength(0);
@@ -21,9 +21,7 @@ test("確定した報告書を、確認画面を経てお客様へメール送�
   // 送信エラー後、React がフォームをリセットし終えてからチェックする
   await expect(async () => {
     await page.getByRole("checkbox", { name: /に誤りがないことを確認しました/ }).check();
-    await page.getByRole("checkbox", { name: /上記の内容で送信します/ }).check();
     await page.waitForTimeout(300);
-    await expect(page.getByRole("checkbox", { name: /上記の内容で送信します/ })).toBeChecked();
     await expect(page.getByRole("checkbox", { name: /に誤りがないことを確認しました/ })).toBeChecked();
   }).toPass();
   await page.getByRole("button", { name: "この内容で送信する" }).click();
@@ -52,7 +50,6 @@ test("確定した報告書を、確認画面を経てお客様へメール送�
   await page.getByText("PDFを添付", { exact: true }).click();
   await page.getByRole("button", { name: "送信内容を確認する" }).click();
   await expect(page.getByText("初めて送信する宛先です")).toHaveCount(0);
-  await page.getByText("上記の内容で送信します").click();
   await page.getByRole("button", { name: "この内容で送信する" }).click();
   await expect(page.getByText("お客様へのメール送信が完了しました。")).toBeVisible();
   const mails = mailsTo(customerEmail);
@@ -60,7 +57,7 @@ test("確定した報告書を、確認画面を経てお客様へメール送�
   expect(mails.some((m) => m.attachments?.[0]?.filename.endsWith(".pdf") && m.attachments[0].size > 10_000)).toBe(true);
 
   await page.goto("/app");
-  await expect(page.getByTestId("stat-今月の顧客送信")).toContainText("2");
+  await expect(page.getByTestId("stat-sent")).toContainText("2");
 });
 
 test("送信失敗時はエラーを表示し、送信履歴から再送できる", async ({ page }) => {
@@ -69,7 +66,6 @@ test("送信失敗時はエラーを表示し、送信履歴から再送でき�
   await page.getByRole("link", { name: "顧客へ送信" }).click();
   await page.getByRole("button", { name: "送信内容を確認する" }).click();
   await page.getByText(/に誤りがないことを確認しました/).click();
-  await page.getByText("上記の内容で送信します").click();
   await page.getByRole("button", { name: "この内容で送信する" }).click();
   await expect(page.getByText(/テスト用の送信失敗/).first()).toBeVisible();
 

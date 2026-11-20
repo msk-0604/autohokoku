@@ -64,17 +64,17 @@ export function LogoForm({ hasLogo, disabled }: { hasLogo: boolean; disabled: bo
   return (
     <div className="space-y-3">
       <FormMessage state={msg} />
-      <div className="flex h-24 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50">
+      <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50">
         {hasLogo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={`/api/org/logo?v=${version}`} alt="会社ロゴ" className="max-h-20 max-w-[80%] object-contain" />
         ) : (
-          <span className="text-sm text-slate-500">ロゴ未登録（PDFには会社名が表示されます）</span>
+          <span className="px-3 text-center text-sm text-slate-500">ロゴは未登録です（PDFの右上には会社名・住所だけが表示されます）</span>
         )}
       </div>
       {!disabled && (
         <div className="flex gap-2">
-          <label className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-bold text-navy-900">
+          <label className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-bold text-navy-900">
             <Upload className="size-4" /> ロゴを選ぶ
             <input ref={ref} type="file" accept="image/png,image/jpeg" className="sr-only" onChange={(e) => e.target.files?.[0] && start(() => upload(e.target.files![0]))} data-testid="logo-input" />
           </label>
@@ -88,7 +88,7 @@ export function LogoForm({ hasLogo, disabled }: { hasLogo: boolean; disabled: bo
                   router.refresh();
                 })
               }
-              className="inline-flex h-11 items-center gap-2 rounded-xl px-4 text-sm font-bold text-red-600"
+              className="inline-flex h-11 items-center gap-2 rounded-lg px-4 text-sm font-bold text-red-700 hover:bg-red-50"
             >
               <Trash2 className="size-4" /> 削除
             </button>
@@ -144,12 +144,12 @@ export function MemberControls({ userId, role, disabled }: { userId: string; rol
         value={role}
         disabled={pending || disabled}
         onChange={(e) => run({ role: e.target.value as "admin" | "member" })}
-        className="h-9 rounded-lg border border-slate-300 bg-white px-2 text-sm"
+        className="h-10 rounded-lg border border-slate-300 bg-white px-2 text-sm"
       >
         <option value="member">一般ユーザー</option>
         <option value="admin">管理者</option>
       </select>
-      <button type="button" disabled={pending} onClick={() => confirm(disabled ? "利用を再開しますか？" : "このメンバーの利用を停止しますか？") && run({ disabled: !disabled })} className="h-9 rounded-lg border border-slate-300 px-3 text-xs font-bold">
+      <button type="button" disabled={pending} onClick={() => confirm(disabled ? "利用を再開しますか？" : "このメンバーの利用を停止しますか？") && run({ disabled: !disabled })} className="h-10 rounded-lg border border-slate-300 px-3 text-sm font-bold">
         {disabled ? "利用再開" : "利用停止"}
       </button>
       {err && <p className="w-full text-xs text-red-600">{err}</p>}

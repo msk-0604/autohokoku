@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, MapPin, Plus, FileText } from "lucide-react";
+import { Plus } from "lucide-react";
 import { requireAuth } from "@/lib/auth/dal";
 import { accessOf } from "@/lib/billing/access";
 import { getCustomer, listSites } from "@/lib/data/customers";
 import { listReports } from "@/lib/data/reports";
-import { Alert, Badge, Card, CardHeader, LinkButton, PageHeader } from "@/components/ui";
+import { Alert, BackLink, Badge, Card, CardHeader, LinkButton, PageHeader } from "@/components/ui";
+import { EditToggle, InfoList } from "@/components/edit-toggle";
 import { SubmitButton } from "@/components/form";
 import { ReportList } from "@/components/report-list";
 import { CustomerForm } from "../customer-form";
@@ -24,35 +25,47 @@ export default async function CustomerPage({ params, searchParams }: { params: P
       <PageHeader
         title={c.name}
         description={c.archivedAt ? <Badge tone="slate">アーカイブ済み</Badge> : undefined}
-        back={
-          <Link href="/app/customers" className="mb-2 inline-flex items-center gap-1 text-sm text-slate-600">
-            <ChevronLeft className="size-4" /> 顧客一覧
-          </Link>
-        }
+        back={<BackLink href="/app/customers">顧客一覧</BackLink>}
         actions={
           canWrite && !c.archivedAt ? (
             <LinkButton href={`/app/reports/new?customer=${id}`}>
-              <Plus className="size-5" /> この顧客の報告書
+              <Plus className="size-5" aria-hidden /> この顧客の報告書
             </LinkButton>
           ) : undefined
         }
       />
       {sp.created && <Alert tone="success" className="mb-4">顧客を登録しました。</Alert>}
-      <div className="grid gap-5 lg:grid-cols-[1fr_20rem]">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <Card className="p-4 sm:p-6">
-          <CustomerForm id={id} values={c} disabled={!canWrite} />
+          <EditToggle
+            canEdit={canWrite}
+            view={
+              <InfoList
+                rows={[
+                  ["顧客名", c.name],
+                  ["会社名", c.companyName],
+                  ["担当者", c.contactName],
+                  ["電話", c.phone ? <a href={`tel:${c.phone}`} className="text-brand-700 underline">{c.phone}</a> : null],
+                  ["メール", c.email ? <a href={`mailto:${c.email}`} className="text-brand-700 underline">{c.email}</a> : null],
+                  ["住所", c.address],
+                  ["備考", c.note],
+                ]}
+              />
+            }
+            form={<CustomerForm id={id} values={c} />}
+          />
           {canWrite && (
             <form action={setCustomerArchivedAction.bind(null, id, !c.archivedAt)} className="mt-6 border-t border-slate-100 pt-4">
-              <SubmitButton variant={c.archivedAt ? "secondary" : "danger"} size="sm">
+              <SubmitButton variant="secondary" size="sm">
                 {c.archivedAt ? "アーカイブから戻す" : "アーカイブする"}
               </SubmitButton>
-              <p className="mt-1 text-xs text-slate-500">アーカイブすると選択肢に表示されなくなります。過去の報告書は残ります。</p>
+              <p className="mt-1 text-xs text-slate-500">アーカイブすると、報告書を作るときの選択肢に出なくなります。過去の報告書はそのまま残ります。</p>
             </form>
           )}
         </Card>
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <Card>
-            <CardHeader title="現場" icon={<MapPin className="size-4 text-brand-600" />} action={canWrite ? <Link href="/app/sites/new" className="text-sm font-bold text-brand-700">追加</Link> : undefined} />
+            <CardHeader title="この顧客の現場" action={canWrite ? <Link href={`/app/sites/new?customer=${id}`} className="text-sm font-bold text-brand-700">現場を追加</Link> : undefined} />
             <ul className="divide-y divide-slate-100 pb-2">
               {siteRows.length === 0 && <li className="px-4 py-4 text-sm text-slate-500">登録された現場はありません</li>}
               {siteRows.map(({ site }) => (
@@ -66,7 +79,7 @@ export default async function CustomerPage({ params, searchParams }: { params: P
             </ul>
           </Card>
           <Card>
-            <CardHeader title="報告書" icon={<FileText className="size-4 text-brand-600" />} />
+            <CardHeader title="この顧客の報告書" />
             <div className="mt-2">{reports.length ? <ReportList rows={reports} /> : <p className="px-4 pb-4 text-sm text-slate-500 sm:px-5">まだ報告書はありません</p>}</div>
           </Card>
         </div>

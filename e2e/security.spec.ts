@@ -21,9 +21,15 @@ test("別企業のデータ（報告書・写真・顧客・現場・PDF）に�
   await signupAndVerify(b, { company: "B社テスト" });
   const cookiesB = cookieHeader(await ctxB.cookies());
 
+  // 画面は読み込み表示（ストリーミング）のため HTTP ステータスは 200 になるが、
+  // 中身は「見つかりません」の画面で、A社のデータは一切含まれないことを確認する
   for (const path of [`/app/reports/${ids.reportId}`, `/app/reports/${ids.reportId}/edit`, `/app/reports/${ids.reportId}/send`, `/app/customers/${ids.customerId}`, `/app/sites/${ids.siteId}`]) {
-    const res = await b.goto(path);
-    expect(res?.status(), path).toBe(404);
+    await b.goto(path);
+    await expect(b.getByRole("heading", { name: "ページが見つかりません" }), path).toBeVisible();
+    const html = await b.content();
+    expect(html, path).not.toContain(reportNumberA);
+    expect(html, path).not.toContain("A社の顧客");
+    expect(html, path).not.toContain(ids.photoId);
   }
   for (const path of [`/api/photos/${ids.photoId}`, `/api/photos/${ids.photoId}?thumb=1`, `/api/reports/${ids.reportId}/pdf`]) {
     const res = await b.request.get(path, { headers: { cookie: cookiesB } });

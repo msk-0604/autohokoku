@@ -1,5 +1,4 @@
 import { asc, eq } from "drizzle-orm";
-import { Building2, Users, UserCircle, ImageIcon } from "lucide-react";
 import { requireAuth } from "@/lib/auth/dal";
 import { db } from "@/lib/db";
 import { memberships, users } from "@/lib/db/schema";
@@ -19,16 +18,28 @@ export default async function SettingsPage() {
   return (
     <>
       <PageHeader title="会社設定" description={isAdmin ? undefined : "会社情報とメンバーの変更は管理者のみ行えます。"} />
-      <div className="grid gap-5 lg:grid-cols-[1fr_22rem]">
+      <nav aria-label="設定の項目" className="-mx-1 mb-4 flex flex-wrap gap-x-1 text-sm font-bold">
+        {[
+          ["#company", "会社情報"],
+          ["#logo", "ロゴ"],
+          ["#members", "メンバー"],
+          ["#account", "ログイン情報"],
+        ].map(([href, label]) => (
+          <a key={href} href={href} className="inline-flex h-10 items-center rounded-lg px-3 text-brand-700 hover:bg-slate-100">
+            {label}
+          </a>
+        ))}
+      </nav>
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="space-y-5">
-          <Card>
-            <CardHeader title="会社情報" icon={<Building2 className="size-4 text-brand-600" />} />
+          <Card id="company" className="scroll-mt-20">
+            <CardHeader title="会社情報" />
             <div className="p-4 sm:p-5">
               <OrgForm values={ctx.org} disabled={!isAdmin} />
             </div>
           </Card>
-          <Card>
-            <CardHeader title="メンバー" icon={<Users className="size-4 text-brand-600" />} />
+          <Card id="members" className="scroll-mt-20">
+            <CardHeader title="メンバー" />
             <ul className="divide-y divide-slate-100 px-4 sm:px-5" data-testid="member-list">
               {members.map((m) => (
                 <li key={m.userId} className="flex flex-wrap items-center justify-between gap-2 py-3">
@@ -55,15 +66,15 @@ export default async function SettingsPage() {
             )}
           </Card>
         </div>
-        <div className="space-y-5">
-          <Card>
-            <CardHeader title="会社ロゴ" icon={<ImageIcon className="size-4 text-brand-600" />} />
+        <div className="min-w-0 space-y-5">
+          <Card id="logo" className="scroll-mt-20">
+            <CardHeader title="会社ロゴ" />
             <div className="p-4 sm:p-5">
               <LogoForm hasLogo={!!ctx.org.logoKey} disabled={!isAdmin} />
             </div>
           </Card>
-          <Card>
-            <CardHeader title="ログイン情報" icon={<UserCircle className="size-4 text-brand-600" />} />
+          <Card id="account" className="scroll-mt-20">
+            <CardHeader title="ログイン情報" />
             <div className="p-4 sm:p-5">
               <p className="mb-4 text-sm text-slate-600">{ctx.user.email}</p>
               <ProfileForms name={ctx.user.name} />

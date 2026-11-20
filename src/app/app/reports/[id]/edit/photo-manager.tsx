@@ -123,9 +123,9 @@ export function PhotoManager({ reportId, initialPhotos, editable }: { reportId: 
       )}
 
       {editable && (
-        <div className="mb-4 rounded-2xl border border-brand-100 bg-brand-50/60 p-3">
-          <p className="mb-2 text-xs font-bold text-slate-600">次に撮る写真の分類</p>
-          <div className="mb-3 grid grid-cols-4 gap-1.5" role="radiogroup" aria-label="写真の分類">
+        <div className="mb-4 rounded-xl border border-slate-200 bg-white p-3">
+          <p className="mb-2 text-sm font-bold text-slate-700">これから撮る写真の分類</p>
+          <div className="mb-3 grid grid-cols-4 gap-0.5 rounded-lg border border-slate-300 p-0.5" role="radiogroup" aria-label="写真の分類">
             {CATS.map((c) => (
               <button
                 key={c}
@@ -133,19 +133,19 @@ export function PhotoManager({ reportId, initialPhotos, editable }: { reportId: 
                 role="radio"
                 aria-checked={category === c}
                 onClick={() => setCategory(c)}
-                className={cn("h-10 rounded-lg text-sm font-bold", category === c ? "bg-navy-900 text-white" : "border border-slate-300 bg-white text-slate-700")}
+                className={cn("h-10 rounded-md text-sm font-bold", category === c ? "bg-navy-900 text-white" : "text-slate-700 hover:bg-slate-50")}
               >
                 {CATEGORY_LABELS[c]}
               </button>
             ))}
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <label className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-xl bg-brand-600 font-bold text-white shadow-sm active:bg-brand-700">
+            <label className="flex h-13 cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand-600 font-bold text-white active:bg-brand-700">
               <Camera className="size-6" aria-hidden />
               撮影する
               <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="sr-only" onChange={(e) => onFiles(e.target.files)} data-testid="camera-input" />
             </label>
-            <label className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white font-bold text-navy-900 active:bg-slate-50">
+            <label className="flex h-13 cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white font-bold text-navy-900 active:bg-slate-50">
               <ImagePlus className="size-6" aria-hidden />
               写真を選ぶ
               <input ref={pickerRef} type="file" accept="image/*" multiple className="sr-only" onChange={(e) => onFiles(e.target.files)} data-testid="photo-input" />
@@ -157,7 +157,7 @@ export function PhotoManager({ reportId, initialPhotos, editable }: { reportId: 
       {uploads.length > 0 && (
         <ul className="mb-4 space-y-2" aria-live="polite">
           {uploads.map((u) => (
-            <li key={u.key} className="rounded-xl border border-slate-200 bg-white p-3 text-sm">
+            <li key={u.key} className="rounded-lg border border-slate-200 bg-white p-3 text-sm">
               <div className="flex items-center justify-between gap-2">
                 <span className="flex min-w-0 items-center gap-2">
                   {u.status === "error" ? <AlertCircle className="size-4 shrink-0 text-red-600" /> : <Loader2 className="size-4 shrink-0 animate-spin text-brand-600" />}
@@ -185,13 +185,13 @@ export function PhotoManager({ reportId, initialPhotos, editable }: { reportId: 
       )}
 
       {photos.length === 0 && uploads.length === 0 ? (
-        <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-white px-4 py-10 text-center text-sm text-slate-500">
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white px-4 py-10 text-center text-sm text-slate-600">
           まだ写真がありません。{editable && "「撮影する」から現場の写真を追加してください。"}
         </div>
       ) : (
         <ol className="space-y-3" data-testid="photo-list">
           {photos.map((p, i) => (
-            <li key={p.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,42,74,0.04)]">
+            <li key={p.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
               <div className="flex flex-col sm:flex-row">
                 <button type="button" onClick={() => setViewer(i)} className="relative block aspect-[4/3] w-full shrink-0 bg-slate-100 sm:w-64" aria-label={`写真${i + 1}を拡大表示`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -229,8 +229,8 @@ export function PhotoManager({ reportId, initialPhotos, editable }: { reportId: 
 
       {editable && photos.length > 0 && (
         <div className="mt-4 flex justify-center">
-          <button type="button" onClick={() => cameraRef.current?.click()} className="flex size-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg" aria-label="写真を追加で撮影">
-            <Camera className="size-6" />
+          <button type="button" onClick={() => cameraRef.current?.click()} className="flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 font-bold text-navy-900" aria-label="写真を追加で撮影">
+            <Camera className="size-5" aria-hidden /> 続けて撮影
           </button>
         </div>
       )}
@@ -259,7 +259,7 @@ function PhotoEditor({ photo, onChange }: { photo: PhotoItem; onChange: (patch: 
       <select
         value={photo.category}
         onChange={(e) => onChange({ category: e.target.value as PhotoItem["category"] })}
-        className="h-10 w-full rounded-lg border border-slate-300 bg-white px-2 text-[16px]"
+        className="h-11 w-full rounded-lg border border-slate-300 bg-white px-2 text-[16px]"
         aria-label="写真の分類"
       >
         {CATS.map((c) => (
@@ -274,7 +274,7 @@ function PhotoEditor({ photo, onChange }: { photo: PhotoItem; onChange: (patch: 
         onBlur={(e) => commit(e.target.value)}
         rows={3}
         maxLength={500}
-        placeholder="写真へのコメント（例：エアコン室外機の撤去前）"
+        placeholder="写真の説明（例：室外機の撤去前）"
         className="block w-full rounded-lg border border-slate-300 px-3 py-2 text-[16px] leading-relaxed focus:border-brand-600 focus:ring-3 focus:ring-brand-100 focus:outline-none"
         aria-label="写真へのコメント"
       />
@@ -288,7 +288,7 @@ function PhotoEditor({ photo, onChange }: { photo: PhotoItem; onChange: (patch: 
               setCaption(v);
               commit(v);
             }}
-            className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 active:bg-brand-50"
+            className="min-h-10 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 active:bg-slate-100"
           >
             {ph}
           </button>

@@ -26,8 +26,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <div className="mt-auto border-t border-white/10 px-2 pt-4 text-sm text-navy-100">
           <p className="truncate font-bold text-white">{ctx.org.name}</p>
           <p className="truncate">{ctx.user.name}</p>
-          <form action={logoutAction} className="mt-3">
-            <button className="flex items-center gap-2 text-navy-100 hover:text-white">
+          <form action={logoutAction} className="mt-2">
+            <button className="-ml-1 flex h-10 items-center gap-2 rounded-lg px-1 text-navy-100 hover:text-white">
               <LogOut className="size-4" /> ログアウト
             </button>
           </form>
@@ -35,13 +35,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* スマホ: 上部バー */}
-      <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur lg:hidden no-print">
-        <Link href="/app" className="flex items-center gap-2">
-          <LogoMark className="size-7" />
-          <span className="max-w-[55vw] truncate text-[15px] font-bold text-navy-900">{ctx.org.name}</span>
+      <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 lg:hidden no-print">
+        <Link href="/app" className="flex min-w-0 items-center gap-2">
+          <LogoMark className="size-7 shrink-0" />
+          <span className="truncate text-[15px] font-bold text-navy-900">{ctx.org.name}</span>
         </Link>
-        <Link href="/app/billing" className={cn("rounded-full px-2.5 py-1 text-xs font-bold", access.tone === "ok" ? "bg-navy-50 text-navy-800" : access.tone === "warn" ? "bg-amber-50 text-amber-800" : "bg-red-50 text-red-700")}>
-          {access.status === "trialing" ? `体験 残り${access.trialDaysLeft}日` : access.label}
+        <Link href="/app/billing" className={cn("shrink-0 rounded-md px-2 py-1 text-xs font-bold", access.tone === "ok" ? "text-slate-600" : access.tone === "warn" ? "bg-amber-50 text-amber-800" : "bg-red-50 text-red-700")}>
+          {access.status === "trialing" ? `無料体験 残り${access.trialDaysLeft}日` : access.label}
         </Link>
       </header>
 
@@ -56,7 +56,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
       ) : null}
 
-      <main className="mx-auto max-w-5xl px-4 pt-5 pb-28 sm:px-6 lg:pb-12">{children}</main>
+      <main className="mx-auto max-w-5xl px-4 pt-5 pb-24 sm:px-6 lg:pb-12 xl:max-w-6xl">{children}</main>
       <BottomNav />
     </div>
   );

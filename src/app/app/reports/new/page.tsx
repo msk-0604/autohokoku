@@ -24,7 +24,7 @@ export default async function NewReportPage({ searchParams }: { searchParams: Pr
   const site = sp.site ? sites.find((s) => s.id === sp.site) : undefined;
   return (
     <>
-      <PageHeader title="新規報告書作成" description="基本情報を選んで「作成して写真を撮る」を押してください。あとから変更できます。" />
+      <PageHeader title="新規報告書作成" description="現場と作業日を選んで「作成して写真を撮る」を押してください。どの項目もあとから変更できます。" />
       <Card className="p-4 sm:p-6">
         <NewReportForm
           customers={customers}

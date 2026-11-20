@@ -16,7 +16,9 @@
   --color-brand-700: #1d4ed8;
   --color-surface: #f5f7fb;
   --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic UI", "Yu Gothic", Meiryo, system-ui, sans-serif;
-  --radius-card: 1rem;
+  /* 補足文字の最小サイズを 13px にする（12px は現場で読みにくい） */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.55;
 }
 
 :root {

@@ -1,8 +1,7 @@
-import Link from "next/link";
-import { FileText, Plus, Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { requireAuth } from "@/lib/auth/dal";
 import { listReports } from "@/lib/data/reports";
-import { Alert, Card, EmptyState, Input, LinkButton, PageHeader, cn } from "@/components/ui";
+import { Alert, Card, EmptyState, FilterTabs, Input, LinkButton, PageHeader, buttonClass } from "@/components/ui";
 import { ReportList } from "@/components/report-list";
 
 const PAGE = 30;
@@ -29,7 +28,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         title="作業報告書"
         actions={
           <LinkButton href="/app/reports/new">
-            <Plus className="size-5" /> 新規作成
+            <Plus className="size-5" aria-hidden /> 新規報告書
           </LinkButton>
         }
       />
@@ -40,35 +39,25 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           <Search className="pointer-events-none absolute top-3.5 left-3 size-5 text-slate-400" aria-hidden />
           <Input name="q" defaultValue={q} placeholder="番号・顧客・現場・内容で検索" className="pl-10" aria-label="報告書を検索" />
         </div>
-        <button className="h-12 rounded-xl bg-navy-900 px-4 font-bold text-white">検索</button>
+        <button className={buttonClass("secondary", "md", "h-12")}>検索</button>
       </form>
-      <div className="mb-4 flex gap-2" role="tablist">
-        {[
-          { label: "すべて", v: undefined },
-          { label: "下書き", v: "draft" },
-          { label: "確定済み", v: "final" },
-        ].map((t) => (
-          <Link
-            key={t.label}
-            href={qs({ status: t.v, page: undefined })}
-            role="tab"
-            aria-selected={status === t.v}
-            className={cn("rounded-full px-4 py-2 text-sm font-bold", status === t.v ? "bg-navy-900 text-white" : "border border-slate-300 bg-white text-slate-700")}
-          >
-            {t.label}
-          </Link>
-        ))}
-      </div>
+      <FilterTabs
+        label="状態で絞り込み"
+        items={[
+          { label: "すべて", href: qs({ status: undefined, page: undefined }), active: !status },
+          { label: "下書き", href: qs({ status: "draft", page: undefined }), active: status === "draft" },
+          { label: "確定", href: qs({ status: "final", page: undefined }), active: status === "final" },
+        ]}
+      />
       <Card>
         {rows.length === 0 ? (
           <EmptyState
-            icon={<FileText className="size-7" />}
             title={q || status ? "該当する報告書がありません" : "まだ報告書がありません"}
             description={q || status ? "検索条件を変えてお試しください。" : "スマホで写真を撮って、最初の報告書を作ってみましょう。"}
             action={!q && !status ? <LinkButton href="/app/reports/new">報告書を作成する</LinkButton> : undefined}
           />
         ) : (
-          <ReportList rows={rows.slice(0, PAGE)} />
+          <ReportList rows={rows.slice(0, PAGE)} table />
         )}
       </Card>
       <div className="mt-4 flex justify-between">

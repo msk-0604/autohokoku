@@ -149,7 +149,7 @@ export default function LandingPage() {
       {/* 2. サービスの特徴 */}
       <section id="features" className="scroll-mt-16 py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionTitle eyebrow="FEATURES" title="サービスの特徴" />
+          <SectionTitle title="サービスの特徴" />
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => (
               <div key={f.title} className="rounded-2xl border border-slate-200 bg-white p-6">
@@ -167,7 +167,7 @@ export default function LandingPage() {
       {/* 3. 利用イメージ */}
       <section className="bg-surface py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionTitle eyebrow="HOW IT WORKS" title="使い方は3ステップ" />
+          <SectionTitle title="使い方は3ステップ" />
           <ol className="mt-10 grid gap-6 md:grid-cols-3">
             {STEPS.map((s, i) => (
               <li key={s.title} className="relative rounded-2xl bg-white p-6 shadow-sm">
@@ -204,7 +204,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="order-1 lg:order-2">
-            <SectionTitle eyebrow="SAMPLE" title="作業報告書サンプル" align="left" />
+            <SectionTitle title="作業報告書サンプル" align="left" />
             <p className="mt-5 leading-relaxed text-slate-700">
               A4縦の報告書に、会社ロゴ・報告書番号・顧客名・現場名・作業日・作業時間・作業内容・使用材料・特記事項・写真とコメントを自動でレイアウトします。印刷してもきれいに読めるデザインです。
             </p>
@@ -227,7 +227,7 @@ export default function LandingPage() {
       {/* 5. 導入メリット */}
       <section className="bg-navy-900 py-16 text-white sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionTitle eyebrow="MERITS" title="導入メリット" dark />
+          <SectionTitle title="導入メリット" dark />
           <div className="mt-10 grid gap-5 sm:grid-cols-2">
             {MERITS.map((m) => (
               <div key={m.title} className="flex gap-4 rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
@@ -245,7 +245,7 @@ export default function LandingPage() {
       {/* 6. 対応業種 */}
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionTitle eyebrow="INDUSTRIES" title="対応業種" />
+          <SectionTitle title="対応業種" />
           <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {INDUSTRIES.map((i) => (
               <li key={i.label} className="flex items-center gap-3 rounded-xl border border-slate-200 p-4 font-bold text-navy-900">
@@ -259,7 +259,7 @@ export default function LandingPage() {
       {/* 7. 料金 */}
       <section id="pricing" className="scroll-mt-16 bg-surface py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionTitle eyebrow="PRICING" title="料金" />
+          <SectionTitle title="料金" />
           <div className="mx-auto mt-10 max-w-md rounded-3xl bg-white p-8 text-center shadow-lg ring-1 ring-slate-200">
             <p className="font-bold text-brand-700">スタンダードプラン</p>
             <p className="mt-3 text-5xl font-bold text-navy-900">
@@ -285,7 +285,7 @@ export default function LandingPage() {
       {/* 8. よくある質問 */}
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <SectionTitle eyebrow="FAQ" title="よくある質問" />
+          <SectionTitle title="よくある質問" />
           <div className="mt-10 divide-y divide-slate-200 rounded-2xl border border-slate-200">
             {FAQ.slice(0, 7).map((f) => (
               <details key={f.q} className="group p-5">
@@ -320,11 +320,10 @@ export default function LandingPage() {
   );
 }
 
-function SectionTitle({ eyebrow, title, align = "center", dark = false }: { eyebrow: string; title: string; align?: "center" | "left"; dark?: boolean }) {
+function SectionTitle({ title, align = "center", dark = false }: { title: string; align?: "center" | "left"; dark?: boolean }) {
   return (
     <div className={align === "center" ? "text-center" : ""}>
-      <p className={`text-sm font-bold tracking-widest ${dark ? "text-brand-500" : "text-brand-600"}`}>{eyebrow}</p>
-      <h2 className={`mt-2 text-3xl font-bold ${dark ? "text-white" : "text-navy-900"}`}>{title}</h2>
+      <h2 className={`text-2xl font-bold sm:text-3xl ${dark ? "text-white" : "text-navy-900"}`}>{title}</h2>
     </div>
   );
 }

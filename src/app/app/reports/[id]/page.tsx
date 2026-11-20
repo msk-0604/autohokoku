@@ -1,11 +1,11 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, Copy, FileDown, FileText, Mail, Pencil, History } from "lucide-react";
+import { Copy, Mail, Pencil } from "lucide-react";
 import { requireAuth } from "@/lib/auth/dal";
 import { accessOf } from "@/lib/billing/access";
 import { getReport, listEmailLogs, listPhotos, listVersions } from "@/lib/data/reports";
 import { formatDate, formatDateTime, workDuration } from "@/lib/dates";
-import { Alert, Badge, Card, CardHeader, LinkButton, PageHeader, StatusBadge, buttonClass } from "@/components/ui";
+import { Alert, BackLink, Badge, Card, LinkButton, PageHeader, StatusBadge } from "@/components/ui";
+import { PdfActions } from "./pdf-actions";
 import { PhotoManager } from "./edit/photo-manager";
 import { duplicateReportAction, reopenReportAction } from "../actions";
 import { SubmitButton } from "@/components/form";
@@ -26,8 +26,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
     ["現場", r.site ? `${r.site.name}${r.site.address ? `（${r.site.address}）` : ""}` : null],
     ["作業担当者", rep.workerNames],
     ["作業時間", rep.startTime || rep.endTime ? `${rep.startTime ?? ""} 〜 ${rep.endTime ?? ""} ${workDuration(rep.startTime, rep.endTime) ? `（${workDuration(rep.startTime, rep.endTime)}）` : ""}` : null],
-    ["作成者", r.creatorName],
-    ["作成日時", formatDateTime(rep.createdAt)],
+    ["作成", `${r.creatorName ?? ""}　${formatDateTime(rep.createdAt)}`],
   ];
   const texts: [string, string | null][] = [
     ["作業内容", rep.workContent],
@@ -39,105 +38,84 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
   return (
     <>
       <PageHeader
-        back={
-          <Link href="/app/reports" className="mb-2 inline-flex items-center gap-1 text-sm text-slate-600">
-            <ChevronLeft className="size-4" /> 報告書一覧
-          </Link>
-        }
+        back={<BackLink href="/app/reports">報告書一覧</BackLink>}
         title={rep.title || "作業報告書"}
         description={
           <span className="flex flex-wrap items-center gap-2">
-            <span className="font-bold text-navy-900">{rep.reportNumber}</span>
             <StatusBadge status={rep.status} version={rep.version} />
+            <span className="tabular-nums">{rep.reportNumber}</span>
           </span>
         }
       />
 
-      {sp.finalized && <Alert tone="success" className="mb-4">報告書を確定しました。PDFの出力やお客様への送信ができます。</Alert>}
+      {sp.finalized && <Alert tone="success" className="mb-4">報告書を確定しました。PDFの確認とお客様への送信ができます。</Alert>}
       {sp.sent && <Alert tone="success" className="mb-4">お客様へのメール送信が完了しました。</Alert>}
 
-      {/* 主要操作 */}
-      <Card className="mb-5 p-4">
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-          <a href={`/api/reports/${id}/pdf`} target="_blank" rel="noopener" className={buttonClass("primary", "lg", "col-span-2 sm:col-auto")} data-testid="pdf-view">
-            <FileText className="size-5" /> PDFを表示{!isFinal && "（下書き）"}
-          </a>
-          <a href={`/api/reports/${id}/pdf?download=1`} className={buttonClass("secondary", "lg")} data-testid="pdf-download">
-            <FileDown className="size-5" /> 保存
-          </a>
-          {isFinal && canWrite ? (
-            <LinkButton href={`/app/reports/${id}/send`} variant="navy" size="lg">
-              <Mail className="size-5" /> 顧客へ送信
-            </LinkButton>
-          ) : !isFinal && canWrite ? (
-            <LinkButton href={`/app/reports/${id}/edit`} variant="navy" size="lg">
-              <Pencil className="size-5" /> 編集を続ける
-            </LinkButton>
-          ) : null}
-        </div>
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-          <span className="text-slate-500">PDFの形式：</span>
-          <a href={`/api/reports/${id}/pdf?layout=grid`} target="_blank" rel="noopener" className="font-bold text-brand-700 underline">
-            写真2列
-          </a>
-          <a href={`/api/reports/${id}/pdf?layout=list`} target="_blank" rel="noopener" className="font-bold text-brand-700 underline">
-            写真＋説明（横並び）
-          </a>
-        </div>
+      {/* 主な操作：送信（確定時）または編集（下書き時）を最も目立たせる */}
+      <Card className="mb-5 space-y-4 p-4 sm:p-5">
+        {canWrite && (isFinal ? (
+          <LinkButton href={`/app/reports/${id}/send`} size="lg" className="w-full sm:w-auto">
+            <Mail className="size-5" aria-hidden /> 顧客へ送信
+          </LinkButton>
+        ) : (
+          <LinkButton href={`/app/reports/${id}/edit`} size="lg" className="w-full sm:w-auto">
+            <Pencil className="size-5" aria-hidden /> 編集を続ける
+          </LinkButton>
+        ))}
+        <PdfActions reportId={id} draft={!isFinal} />
         {canWrite && (
-          <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-100 pt-3">
+          <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-3">
             {isFinal && (
               <form action={reopenReportAction.bind(null, id)}>
-                <SubmitButton variant="secondary" size="sm">
-                  <Pencil className="size-4" /> 修正する
+                <SubmitButton variant="ghost" size="sm">
+                  <Pencil className="size-4" aria-hidden /> 内容を修正する
                 </SubmitButton>
               </form>
             )}
             <form action={duplicateReportAction.bind(null, id)}>
-              <SubmitButton variant="secondary" size="sm">
-                <Copy className="size-4" /> 複製して新規作成
+              <SubmitButton variant="ghost" size="sm">
+                <Copy className="size-4" aria-hidden /> 複製して新規作成
               </SubmitButton>
             </form>
           </div>
         )}
       </Card>
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_20rem]">
-        <div className="space-y-5">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="min-w-0 space-y-5">
+          {/* 報告書の内容（1枚の書類のように並べる） */}
           <Card>
             <dl className="divide-y divide-slate-100">
               {rows.map(([k, v]) => (
-                <div key={k} className="grid grid-cols-[6.5rem_1fr] gap-2 px-4 py-3 text-sm sm:px-5">
-                  <dt className="font-bold text-slate-500">{k}</dt>
+                <div key={k} className="grid grid-cols-[6.5rem_1fr] gap-2 px-4 py-3 text-[15px] sm:px-5">
+                  <dt className="text-slate-500">{k}</dt>
                   <dd className="min-w-0 break-words text-slate-900">{v || "—"}</dd>
+                </div>
+              ))}
+              {texts.map(([k, v]) => (
+                <div key={k} className="px-4 py-3 sm:px-5">
+                  <dt className="text-sm text-slate-500">{k}</dt>
+                  <dd className="mt-1 text-[15px] whitespace-pre-wrap text-slate-900">{v || "—"}</dd>
                 </div>
               ))}
             </dl>
           </Card>
-          <Card className="divide-y divide-slate-100">
-            {texts.map(([k, v]) => (
-              <div key={k} className="px-4 py-3 sm:px-5">
-                <h3 className="text-sm font-bold text-slate-500">{k}</h3>
-                <p className="mt-1 text-[15px] whitespace-pre-wrap text-slate-900">{v || "—"}</p>
-              </div>
-            ))}
-          </Card>
           <PhotoManager reportId={id} initialPhotos={photos.map((p) => ({ id: p.id, category: p.category, caption: p.caption, width: p.width, height: p.height }))} editable={false} />
         </div>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <Card>
-            <CardHeader title="送信履歴" icon={<Mail className="size-4 text-brand-600" />} />
+            <h2 className="px-4 pt-4 text-base font-bold text-navy-900 sm:px-5">送信履歴</h2>
             <ul className="divide-y divide-slate-100 px-4 pb-3 text-sm sm:px-5">
               {emails.length === 0 && <li className="py-3 text-slate-500">まだ送信していません</li>}
               {emails.map(({ log }) => (
                 <li key={log.id} className="py-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="truncate">{log.toEmail}</span>
+                    <span className="min-w-0 truncate">{log.toEmail}</span>
                     <Badge tone={log.status === "sent" ? "green" : log.status === "failed" ? "red" : "amber"}>{log.status === "sent" ? "送信済み" : log.status === "failed" ? "失敗" : "送信中"}</Badge>
                   </div>
                   <p className="text-xs text-slate-500">
-                    {formatDateTime(log.createdAt)}・第{log.reportVersion}版
+                    {formatDateTime(log.createdAt)}　第{log.reportVersion}版
                   </p>
                   {log.status === "failed" && <p className="mt-1 text-xs text-red-600">{log.error}</p>}
                 </li>
@@ -152,7 +130,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
             )}
           </Card>
           <Card>
-            <CardHeader title="版の履歴" icon={<History className="size-4 text-brand-600" />} />
+            <h2 className="px-4 pt-4 text-base font-bold text-navy-900 sm:px-5">版の履歴</h2>
             <ul className="divide-y divide-slate-100 px-4 pb-3 text-sm sm:px-5">
               {versions.length === 0 && <li className="py-3 text-slate-500">まだ確定されていません</li>}
               {versions.map((v) => (

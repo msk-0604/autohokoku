@@ -23,10 +23,12 @@ const photoCount = sql<number>`(SELECT COUNT(*) FROM work_report_photos p WHERE 
 
 export async function listReports(
   orgId: string,
-  opts: { q?: string; status?: "draft" | "final"; customerId?: string; siteId?: string; limit?: number; offset?: number } = {},
+  opts: { q?: string; status?: "draft" | "final"; unsent?: boolean; customerId?: string; siteId?: string; limit?: number; offset?: number } = {},
 ) {
   const conds = [eq(workReports.orgId, orgId), isNull(workReports.deletedAt)];
   if (opts.status) conds.push(eq(workReports.status, opts.status));
+  // 確定済みで、まだ一度も送信に成功していない報告書（読み取りのみ）
+  if (opts.unsent) conds.push(sql`NOT EXISTS (SELECT 1 FROM email_logs e WHERE e.report_id = "work_reports"."id" AND e.status = 'sent')`);
   if (opts.customerId) conds.push(eq(workReports.customerId, opts.customerId));
   if (opts.siteId) conds.push(eq(workReports.siteId, opts.siteId));
   if (opts.q) {

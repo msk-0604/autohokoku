@@ -1,118 +1,98 @@
 import Link from "next/link";
-import { desc, eq, and, isNull } from "drizzle-orm";
-import { Camera, FileText, FilePen, CheckCircle2, Send, Users, ChevronRight } from "lucide-react";
+import { Plus, Check } from "lucide-react";
 import { requireAuth } from "@/lib/auth/dal";
 import { dashboardStats, listReports } from "@/lib/data/reports";
-import { db } from "@/lib/db";
-import { customers } from "@/lib/db/schema";
 import { accessOf } from "@/lib/billing/access";
-import { formatDate } from "@/lib/dates";
-import { Alert, Card, CardHeader, EmptyState, LinkButton } from "@/components/ui";
+import { Alert, Card, CardHeader, LinkButton, cn } from "@/components/ui";
 import { ReportList } from "@/components/report-list";
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const ctx = await requireAuth();
   const sp = await searchParams;
-  const [stats, recent, recentCustomers] = await Promise.all([
+  const [stats, drafts, unsent, recent] = await Promise.all([
     dashboardStats(ctx.org.id),
+    listReports(ctx.org.id, { status: "draft", limit: 5 }),
+    listReports(ctx.org.id, { status: "final", unsent: true, limit: 5 }),
     listReports(ctx.org.id, { limit: 5 }),
-    db
-      .select({ id: customers.id, name: customers.name, companyName: customers.companyName, createdAt: customers.createdAt })
-      .from(customers)
-      .where(and(eq(customers.orgId, ctx.org.id), isNull(customers.archivedAt)))
-      .orderBy(desc(customers.createdAt))
-      .limit(5),
   ]);
   const access = accessOf(ctx.org);
-  const cards = [
-    { label: "今月の報告書", value: stats.monthly, icon: FileText, href: "/app/reports" },
-    { label: "未完成（下書き）", value: stats.drafts, icon: FilePen, href: "/app/reports?status=draft" },
-    { label: "完成済み", value: stats.finals, icon: CheckCircle2, href: "/app/reports?status=final" },
-    { label: "今月の顧客送信", value: stats.sentThisMonth, icon: Send, href: "/app/reports?status=final" },
+  const nothingYet = recent.length === 0;
+  const stat = [
+    { label: "今月の報告書", value: stats.monthly, href: "/app/reports", key: "monthly" },
+    { label: "下書き", value: stats.drafts, href: "/app/reports?status=draft", key: "drafts" },
+    { label: "確定", value: stats.finals, href: "/app/reports?status=final", key: "finals" },
+    { label: "今月の送信", value: stats.sentThisMonth, href: "/app/reports?status=final", key: "sent" },
+  ];
+  const setupSteps = [
+    { label: "会社の住所・電話番号を登録する", done: Boolean(ctx.org.address || ctx.org.phone), href: "/app/settings" },
+    { label: "最初の報告書を作成する", done: !nothingYet, href: "/app/reports/new" },
+    { label: "お客様にメールで送ってみる", done: stats.sentThisMonth > 0, href: "/app/reports?status=final" },
   ];
 
   return (
     <>
-      {sp.welcome && <Alert tone="success" className="mb-4">メールアドレスの確認が完了しました。さっそく最初の報告書を作ってみましょう。</Alert>}
+      {sp.welcome && <Alert tone="success" className="mb-4">メールアドレスの確認が完了しました。</Alert>}
       {sp.denied && <Alert tone="error" className="mb-4">このページは管理者のみ利用できます。</Alert>}
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-sm text-slate-500">{ctx.org.name}</p>
-          <h1 className="text-xl font-bold text-navy-900 sm:text-2xl">ダッシュボード</h1>
-        </div>
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <h1 className="text-xl font-bold text-navy-900 sm:text-2xl">ダッシュボード</h1>
+        {access.canWrite && (
+          <LinkButton href="/app/reports/new" data-testid="new-report-hero">
+            <Plus className="size-5" aria-hidden /> 新規報告書
+          </LinkButton>
+        )}
       </div>
 
-      {access.canWrite && (
-        <Link
-          href="/app/reports/new"
-          className="mb-5 flex items-center gap-4 rounded-2xl bg-gradient-to-br from-navy-900 to-navy-700 p-5 text-white shadow-md active:opacity-90"
-          data-testid="new-report-hero"
-        >
-          <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-brand-600">
-            <Camera className="size-7" />
-          </span>
-          <span className="flex-1">
-            <span className="block text-lg font-bold">新規報告書を作成</span>
-            <span className="block text-sm text-navy-100">写真を撮って、入力するだけ</span>
-          </span>
-          <ChevronRight className="size-6 text-navy-200" />
-        </Link>
-      )}
+      {/* 件数（1つの枠に横並び。アイコンなし） */}
+      <dl className="mb-5 grid grid-cols-2 overflow-hidden rounded-xl border border-slate-200 bg-white sm:grid-cols-4">
+        {stat.map((c, i) => (
+          <Link key={c.key} href={c.href} className={cn("px-4 py-3 hover:bg-slate-50", i % 2 === 1 && "border-l border-slate-200", i >= 2 && "border-t border-slate-200 sm:border-t-0", i === 2 && "sm:border-l")}>
+            <dt className="text-sm text-slate-600">{c.label}</dt>
+            <dd className="mt-0.5 text-2xl font-bold text-navy-900 tabular-nums" data-testid={`stat-${c.key}`}>
+              {c.value}
+              <span className="ml-1 text-sm font-normal text-slate-500">件</span>
+            </dd>
+          </Link>
+        ))}
+      </dl>
 
-      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {cards.map((c) => {
-          const Icon = c.icon;
-          return (
-            <Link key={c.label} href={c.href} className="rounded-2xl border border-slate-200 bg-white p-4 hover:border-brand-500">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-                <Icon className="size-4 text-brand-600" /> {c.label}
-              </div>
-              <p className="mt-2 text-3xl font-bold text-navy-900" data-testid={`stat-${c.label}`}>
-                {c.value}
-                <span className="ml-1 text-sm font-normal text-slate-500">件</span>
-              </p>
-            </Link>
-          );
-        })}
-      </div>
-
-      <div className="grid gap-5 lg:grid-cols-[1fr_20rem]">
-        <Card>
-          <CardHeader title="最近作成した報告書" action={<Link href="/app/reports" className="text-sm font-bold text-brand-700">すべて見る</Link>} />
-          <div className="mt-2">
-            {recent.length ? (
-              <ReportList rows={recent} />
-            ) : (
-              <EmptyState icon={<FileText className="size-7" />} title="まだ報告書がありません" description="上の「新規報告書を作成」から始めましょう。" />
-            )}
-          </div>
-        </Card>
-        <Card>
-          <CardHeader title="最近登録した顧客" icon={<Users className="size-4 text-brand-600" />} action={<Link href="/app/customers" className="text-sm font-bold text-brand-700">一覧</Link>} />
-          <ul className="mt-2 divide-y divide-slate-100 pb-2">
-            {recentCustomers.length === 0 && (
-              <li className="px-4 py-6 text-center text-sm text-slate-500">
-                顧客はまだ登録されていません
-                <div className="mt-3">
-                  <LinkButton href="/app/customers/new" variant="secondary" size="sm">
-                    顧客を登録
-                  </LinkButton>
-                </div>
-              </li>
-            )}
-            {recentCustomers.map((c) => (
-              <li key={c.id}>
-                <Link href={`/app/customers/${c.id}`} className="block px-4 py-3 hover:bg-slate-50 sm:px-5">
-                  <p className="truncate font-bold text-navy-900">{c.name}</p>
-                  <p className="truncate text-xs text-slate-500">
-                    {c.companyName ? `${c.companyName}・` : ""}登録日 {formatDate(c.createdAt)}
-                  </p>
+      {setupSteps.some((s) => !s.done) && nothingYet && (
+        <Card className="mb-5 p-4 sm:p-5">
+          <h2 className="font-bold text-navy-900">はじめにやること</h2>
+          <ol className="mt-3 space-y-1">
+            {setupSteps.map((s, i) => (
+              <li key={s.label}>
+                <Link href={s.href} className="flex min-h-11 items-center gap-3 rounded-lg px-1 hover:bg-slate-50">
+                  <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold", s.done ? "bg-emerald-600 text-white" : "border border-slate-300 text-slate-600")}>
+                    {s.done ? <Check className="size-4" aria-label="完了" /> : i + 1}
+                  </span>
+                  <span className={cn("text-[15px]", s.done ? "text-slate-500 line-through" : "font-bold text-navy-900")}>{s.label}</span>
                 </Link>
               </li>
             ))}
-          </ul>
+          </ol>
+        </Card>
+      )}
+
+      <div className="grid gap-5 lg:grid-cols-2">
+        <Card>
+          <CardHeader title={`書きかけの下書き（${stats.drafts}件）`} action={stats.drafts > 5 ? <Link href="/app/reports?status=draft" className="text-sm font-bold text-brand-700">すべて</Link> : undefined} />
+          <div className="mt-1 pb-1">{drafts.length ? <ReportList rows={drafts} /> : <p className="px-4 py-6 text-sm text-slate-500 sm:px-5">書きかけの報告書はありません。</p>}</div>
+        </Card>
+        <Card>
+          <CardHeader title="確定済み・未送信" action={<Link href="/app/reports?status=final" className="text-sm font-bold text-brand-700">確定済みの一覧</Link>} />
+          <div className="mt-1 pb-1">
+            {unsent.length ? <ReportList rows={unsent} /> : <p className="px-4 py-6 text-sm text-slate-500 sm:px-5">お客様への送信待ちはありません。</p>}
+          </div>
         </Card>
       </div>
+
+      {!nothingYet && (
+        <p className="mt-5 text-right">
+          <Link href="/app/reports" className="inline-flex h-10 items-center text-sm font-bold text-brand-700">
+            すべての報告書を見る
+          </Link>
+        </p>
+      )}
     </>
   );
 }

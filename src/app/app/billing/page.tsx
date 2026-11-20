@@ -1,5 +1,5 @@
 import { desc, eq } from "drizzle-orm";
-import { Check, CreditCard } from "lucide-react";
+import { Check } from "lucide-react";
 import { requireAuth } from "@/lib/auth/dal";
 import { accessOf } from "@/lib/billing/access";
 import { db } from "@/lib/db";
@@ -68,9 +68,7 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
         </Card>
 
         <Card className="p-5">
-          <p className="flex items-center gap-2 text-sm font-bold text-slate-500">
-            <CreditCard className="size-4" /> 料金プラン
-          </p>
+          <p className="text-sm font-bold text-slate-500">料金プラン</p>
           <p className="mt-2 text-3xl font-bold text-navy-900">
             月額 {PRICE_MONTHLY_TAX_INCLUDED.toLocaleString("ja-JP")}円<span className="ml-1 text-base font-normal text-slate-600">（税込）</span>
           </p>

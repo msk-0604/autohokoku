@@ -1,6 +1,15 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
-import { AlertCircle, CheckCircle2, Info } from "lucide-react";
+import { AlertCircle, CheckCircle2, ChevronLeft, Info } from "lucide-react";
+
+/**
+ * 画面部品の共通基準
+ * - 色：青(brand)=操作、紺(navy)=見出し・強調、緑=確定、黄=下書き、赤=エラーと削除のみ
+ * - 角丸：入力・ボタン・カードとも 8px(rounded-lg)／12px(rounded-xl) の2種類だけ
+ * - 影：使わない（区切りは罫線）
+ * - 文字：本文 15〜16px、補足 13px 以上
+ * - ボタン高さ：sm 40px／md 44px／lg 52px（指で押せる大きさを下回らない）
+ */
 
 export function cn(...classes: (string | false | null | undefined)[]) {
   return classes.filter(Boolean).join(" ");
@@ -10,16 +19,16 @@ type Variant = "primary" | "secondary" | "danger" | "ghost" | "navy";
 type Size = "sm" | "md" | "lg";
 
 const variantClass: Record<Variant, string> = {
-  primary: "bg-brand-600 text-white hover:bg-brand-700 shadow-sm disabled:bg-brand-600/50",
-  navy: "bg-navy-900 text-white hover:bg-navy-800 shadow-sm disabled:bg-navy-900/50",
+  primary: "bg-brand-600 text-white hover:bg-brand-700 disabled:bg-brand-600/50",
+  navy: "bg-navy-900 text-white hover:bg-navy-800 disabled:bg-navy-900/50",
   secondary: "bg-white text-navy-900 border border-slate-300 hover:bg-slate-50 disabled:text-slate-400",
-  danger: "bg-white text-red-700 border border-red-200 hover:bg-red-50 disabled:text-red-300",
-  ghost: "text-navy-800 hover:bg-navy-50",
+  danger: "bg-white text-red-700 border border-red-300 hover:bg-red-50 disabled:text-red-300",
+  ghost: "text-navy-800 hover:bg-slate-100",
 };
 const sizeClass: Record<Size, string> = {
-  sm: "h-9 px-3 text-sm rounded-lg gap-1.5",
-  md: "h-11 px-4 text-[15px] rounded-xl gap-2",
-  lg: "h-14 px-6 text-base rounded-xl gap-2",
+  sm: "h-10 px-3.5 text-sm rounded-lg gap-1.5",
+  md: "h-11 px-4 text-[15px] rounded-lg gap-2",
+  lg: "h-13 px-6 text-base rounded-lg gap-2",
 };
 
 export function buttonClass(variant: Variant = "primary", size: Size = "md", extra?: string) {
@@ -50,23 +59,31 @@ export function LinkButton({
   return <Link {...props} className={buttonClass(variant, size, className)} />;
 }
 
+/** 区切りの箱。影は付けない。min-w-0 で中の長い文字が画面幅を押し広げないようにする */
 export function Card({ className, children, ...props }: ComponentProps<"div">) {
   return (
-    <div {...props} className={cn("rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_2px_rgba(15,42,74,0.04)]", className)}>
+    <div {...props} className={cn("min-w-0 rounded-xl border border-slate-200 bg-white", className)}>
       {children}
     </div>
   );
 }
 
-export function CardHeader({ title, action, icon }: { title: ReactNode; action?: ReactNode; icon?: ReactNode }) {
+export function CardHeader({ title, action }: { title: ReactNode; action?: ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3 px-4 pt-4 sm:px-5">
-      <h2 className="flex items-center gap-2 text-base font-bold text-navy-900">
-        {icon}
-        {title}
-      </h2>
+      <h2 className="text-base font-bold text-navy-900">{title}</h2>
       {action}
     </div>
+  );
+}
+
+/** 一覧などへの戻りリンク（全画面で同じ見た目） */
+export function BackLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link href={href} className="-ml-1 mb-1 inline-flex h-9 items-center gap-0.5 rounded-lg pr-2 text-sm font-bold text-slate-600 hover:text-navy-900">
+      <ChevronLeft className="size-4" aria-hidden />
+      {children}
+    </Link>
   );
 }
 
@@ -77,7 +94,7 @@ export function PageHeader({ title, description, actions, back }: { title: strin
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
           <h1 className="text-xl font-bold text-navy-900 sm:text-2xl">{title}</h1>
-          {description && <p className="mt-1 text-sm text-slate-600">{description}</p>}
+          {description && <div className="mt-1 text-sm text-slate-600">{description}</div>}
         </div>
         {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
       </div>
@@ -86,7 +103,7 @@ export function PageHeader({ title, description, actions, back }: { title: strin
 }
 
 const inputBase =
-  "block w-full rounded-xl border border-slate-300 bg-white px-3.5 text-[16px] text-slate-900 placeholder:text-slate-400 focus:border-brand-600 focus:outline-none focus:ring-3 focus:ring-brand-100 disabled:bg-slate-100 aria-[invalid=true]:border-red-500";
+  "block w-full rounded-lg border border-slate-300 bg-white px-3.5 text-[16px] text-slate-900 placeholder:text-slate-400 focus:border-brand-600 focus:outline-none focus:ring-3 focus:ring-brand-100 disabled:bg-slate-50 disabled:text-slate-700 aria-[invalid=true]:border-red-500";
 
 export function Input({ className, ...props }: ComponentProps<"input">) {
   return <input {...props} className={cn(inputBase, "h-12", className)} />;
@@ -124,9 +141,9 @@ export function Field({
   const msg = Array.isArray(error) ? error[0] : error;
   return (
     <div className={className}>
-      <label htmlFor={htmlFor} className="mb-1.5 flex items-center gap-2 text-sm font-bold text-slate-700">
+      <label htmlFor={htmlFor} className="mb-1.5 flex items-baseline gap-2 text-sm font-bold text-slate-700">
         {label}
-        {required && <span className="rounded bg-red-50 px-1.5 py-0.5 text-[11px] font-bold text-red-600">必須</span>}
+        {required && <span className="text-xs font-normal text-red-600">必須</span>}
       </label>
       {children}
       {hint && !msg && <p className="mt-1 text-xs text-slate-500">{hint}</p>}
@@ -148,7 +165,7 @@ export function Alert({ tone = "info", children, className }: { tone?: "info" | 
   }[tone];
   const Icon = tone === "success" ? CheckCircle2 : tone === "info" ? Info : AlertCircle;
   return (
-    <div role={tone === "error" ? "alert" : "status"} className={cn("flex gap-2.5 rounded-xl border px-4 py-3 text-sm leading-relaxed", styles, className)}>
+    <div role={tone === "error" ? "alert" : "status"} className={cn("flex gap-2.5 rounded-lg border px-4 py-3 text-sm leading-relaxed", styles, className)}>
       <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
       <div className="min-w-0">{children}</div>
     </div>
@@ -159,26 +176,44 @@ export function Badge({ tone = "slate", children }: { tone?: "slate" | "blue" | 
   const styles = {
     slate: "bg-slate-100 text-slate-700",
     blue: "bg-brand-50 text-brand-700",
-    green: "bg-emerald-50 text-emerald-700",
+    green: "bg-emerald-50 text-emerald-800",
     amber: "bg-amber-50 text-amber-800",
     red: "bg-red-50 text-red-700",
     navy: "bg-navy-900 text-white",
   }[tone];
-  return <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold whitespace-nowrap", styles)}>{children}</span>;
+  return <span className={cn("inline-flex items-center rounded-md px-2 py-0.5 text-xs font-bold whitespace-nowrap", styles)}>{children}</span>;
 }
 
-export function EmptyState({ icon, title, description, action }: { icon?: ReactNode; title: string; description?: string; action?: ReactNode }) {
+export function EmptyState({ title, description, action }: { title: string; description?: string; action?: ReactNode; icon?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center px-6 py-12 text-center">
-      {icon && <div className="mb-3 rounded-2xl bg-navy-50 p-3 text-navy-700">{icon}</div>}
+    <div className="px-6 py-10 text-center">
       <p className="font-bold text-navy-900">{title}</p>
-      {description && <p className="mt-1 max-w-sm text-sm text-slate-600">{description}</p>}
-      {action && <div className="mt-5">{action}</div>}
+      {description && <p className="mx-auto mt-1 max-w-sm text-sm text-slate-600">{description}</p>}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }
 
+/** 報告書の状態表示。用語は「下書き」「修正中」「確定」の3つに統一 */
 export function StatusBadge({ status, version }: { status: string; version?: number }) {
   if (status === "final") return <Badge tone="green">確定{version && version > 1 ? `・第${version}版` : ""}</Badge>;
   return <Badge tone="amber">{version && version > 0 ? "修正中" : "下書き"}</Badge>;
+}
+
+/** 絞り込みの切り替え（一覧画面で共通） */
+export function FilterTabs({ items, label }: { items: { label: string; href: string; active: boolean }[]; label: string }) {
+  return (
+    <nav aria-label={label} className="mb-4 inline-flex rounded-lg border border-slate-300 bg-white p-0.5">
+      {items.map((t) => (
+        <Link
+          key={t.label}
+          href={t.href}
+          aria-current={t.active ? "page" : undefined}
+          className={cn("flex h-9 items-center rounded-md px-4 text-sm font-bold", t.active ? "bg-navy-900 text-white" : "text-slate-700 hover:bg-slate-50")}
+        >
+          {t.label}
+        </Link>
+      ))}
+    </nav>
+  );
 }
