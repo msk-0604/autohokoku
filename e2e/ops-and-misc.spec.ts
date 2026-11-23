@@ -76,8 +76,8 @@ test("管理者がメンバーを招待し、一般ユーザーは会社情報�
 
 test("LP・SEO：主要セクション、sitemap、robots、構造化データ", async ({ page, request }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("報告書が完成");
-  for (const h of ["サービスの特徴", "使い方は3ステップ", "作業報告書サンプル", "導入メリット", "対応業種", "料金", "よくある質問"]) {
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("そのまま報告書になる");
+  for (const h of ["使い方", "報告書の仕上がり", "仕様", "対象の業種", "料金", "よくある質問"]) {
     await expect(page.getByRole("heading", { name: h, exact: true })).toBeVisible();
   }
   await expect(page.getByText("7,480").first()).toBeVisible();

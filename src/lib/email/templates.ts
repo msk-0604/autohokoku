@@ -11,17 +11,17 @@ export function nl2br(s: string): string {
 
 export function layout(opts: { title: string; bodyHtml: string; footerNote?: string }): string {
   return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${escapeHtml(opts.title)}</title></head>
-<body style="margin:0;background:#f1f5f9;font-family:'Hiragino Sans','Noto Sans JP','Yu Gothic',Meiryo,sans-serif;color:#0f172a;">
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f1f5f9;padding:24px 12px;"><tr><td align="center">
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;">
-<tr><td style="background:#0f2a4a;padding:18px 24px;color:#ffffff;font-weight:bold;font-size:16px;">${escapeHtml(SERVICE_NAME)}</td></tr>
+<body style="margin:0;background:#f3f3f2;font-family:'Hiragino Sans','Noto Sans JP','Yu Gothic',Meiryo,sans-serif;color:#0f172a;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f3f3f2;padding:24px 12px;"><tr><td align="center">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#ffffff;border-radius:6px;border:1px solid #d6d9de;overflow:hidden;">
+<tr><td style="background:#161b22;padding:18px 24px;color:#ffffff;font-weight:bold;font-size:16px;">${escapeHtml(SERVICE_NAME)}</td></tr>
 <tr><td style="padding:28px 24px;font-size:15px;line-height:1.8;">${opts.bodyHtml}</td></tr>
 <tr><td style="padding:16px 24px;background:#f8fafc;color:#64748b;font-size:12px;line-height:1.6;">${opts.footerNote ? escapeHtml(opts.footerNote) + "<br>" : ""}このメールは ${escapeHtml(SERVICE_NAME)}（運営：${escapeHtml(COMPANY_NAME)}）から送信されています。</td></tr>
 </table></td></tr></table></body></html>`;
 }
 
 export function button(href: string, label: string): string {
-  return `<p style="margin:24px 0;"><a href="${escapeHtml(href)}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:bold;">${escapeHtml(label)}</a></p>`;
+  return `<p style="margin:24px 0;"><a href="${escapeHtml(href)}" style="display:inline-block;background:#c2410c;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:4px;font-weight:bold;">${escapeHtml(label)}</a></p>`;
 }
 
 export type Rendered = { subject: string; html: string; text: string };
@@ -126,7 +126,7 @@ export function adminAlertTemplate(title: string, detail: string): Rendered {
   const subject = `[${SERVICE_NAME} 監視] ${title}`.slice(0, 200);
   return {
     subject,
-    html: layout({ title: subject, bodyHtml: `<p><strong>${escapeHtml(title)}</strong></p><pre style="white-space:pre-wrap;font-size:12px;background:#f8fafc;padding:12px;border-radius:8px;">${escapeHtml(detail)}</pre>` }),
+    html: layout({ title: subject, bodyHtml: `<p><strong>${escapeHtml(title)}</strong></p><pre style="white-space:pre-wrap;font-size:12px;background:#f8fafc;padding:12px;border-radius:4px;">${escapeHtml(detail)}</pre>` }),
     text: `${title}\n\n${detail}`,
   };
 }

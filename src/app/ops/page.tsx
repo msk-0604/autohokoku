@@ -87,7 +87,7 @@ function OpsView({ metrics, orgs, recentSupport, recentErrors }: Awaited<ReturnT
     <div className="space-y-6">
       <section className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-6">
         {metrics.map(([label, value, note]) => (
-          <div key={label} className="rounded-xl bg-white p-4 shadow-sm">
+          <div key={label} className="rounded-xl border border-slate-200 bg-white p-4">
             <p className="text-xs font-bold text-slate-500">{label}</p>
             <p className="mt-1 text-2xl font-bold text-slate-900" data-testid={`ops-${label}`}>
               {value}
@@ -97,7 +97,7 @@ function OpsView({ metrics, orgs, recentSupport, recentErrors }: Awaited<ReturnT
         ))}
       </section>
 
-      <section className="rounded-xl bg-white p-4 shadow-sm">
+      <section className="rounded-xl border border-slate-200 bg-white p-4">
         <h2 className="mb-3 font-bold">契約状況（最新100社）</h2>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
@@ -133,7 +133,7 @@ function OpsView({ metrics, orgs, recentSupport, recentErrors }: Awaited<ReturnT
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-xl bg-white p-4 shadow-sm">
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
           <h2 className="mb-3 font-bold">問い合わせ</h2>
           <ul className="divide-y divide-slate-100 text-sm">
             {recentSupport.length === 0 && <li className="py-2 text-slate-500">なし</li>}
@@ -157,7 +157,7 @@ function OpsView({ metrics, orgs, recentSupport, recentErrors }: Awaited<ReturnT
             ))}
           </ul>
         </section>
-        <section className="rounded-xl bg-white p-4 shadow-sm">
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
           <h2 className="mb-3 font-bold">システムエラー（最新15件）</h2>
           <ul className="divide-y divide-slate-100 text-sm">
             {recentErrors.length === 0 && <li className="py-2 text-slate-500">なし</li>}

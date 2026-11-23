@@ -47,7 +47,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         {stat.map((c, i) => (
           <Link key={c.key} href={c.href} className={cn("px-4 py-3 hover:bg-slate-50", i % 2 === 1 && "border-l border-slate-200", i >= 2 && "border-t border-slate-200 sm:border-t-0", i === 2 && "sm:border-l")}>
             <dt className="text-sm text-slate-600">{c.label}</dt>
-            <dd className="mt-0.5 text-2xl font-bold text-navy-900 tabular-nums" data-testid={`stat-${c.key}`}>
+            <dd className="mt-0.5 num text-2xl font-medium text-navy-900" data-testid={`stat-${c.key}`}>
               {c.value}
               <span className="ml-1 text-sm font-normal text-slate-500">件</span>
             </dd>

@@ -57,7 +57,7 @@ export function ReportList({ rows, table = false }: { rows: ReportRow[]; table?:
                 </p>
                 <p className="mt-1 flex items-center gap-2 text-xs text-slate-500">
                   <StatusBadge status={r.status} version={r.version} />
-                  <span className="truncate">{r.reportNumber}</span>
+                  <span className="num truncate">{r.reportNumber}</span>
                   {r.photoCount > 0 && <span className="shrink-0">写真{r.photoCount}枚</span>}
                 </p>
               </div>
@@ -85,7 +85,7 @@ export function ReportList({ rows, table = false }: { rows: ReportRow[]; table?:
                   <td className="px-5 py-3">
                     <StatusBadge status={r.status} version={r.version} />
                   </td>
-                  <td className="px-2 py-3 text-slate-600 tabular-nums">{r.reportNumber}</td>
+                  <td className="px-2 py-3 text-slate-600 num text-sm">{r.reportNumber}</td>
                   <td className="truncate px-2 py-3">
                     <Link href={hrefOf(r)} className="font-bold text-navy-900 after:absolute after:inset-0 group-hover:text-brand-700">
                       {titleOf(r)}
@@ -93,7 +93,7 @@ export function ReportList({ rows, table = false }: { rows: ReportRow[]; table?:
                     {r.title && r.siteName && <span className="ml-2 text-slate-500">{r.siteName}</span>}
                   </td>
                   <td className="truncate px-2 py-3 text-slate-700">{r.customerName ?? "—"}</td>
-                  <td className="px-2 py-3 text-slate-700 tabular-nums">{shortDate(r.workDate)}</td>
+                  <td className="px-2 py-3 text-slate-700 num text-sm">{shortDate(r.workDate)}</td>
                   <td className="px-5 py-3 text-right text-slate-600 tabular-nums">{r.photoCount}枚</td>
                 </tr>
               ))}

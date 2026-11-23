@@ -4,8 +4,8 @@ import { AlertCircle, CheckCircle2, ChevronLeft, Info } from "lucide-react";
 
 /**
  * 画面部品の共通基準
- * - 色：青(brand)=操作、紺(navy)=見出し・強調、緑=確定、黄=下書き、赤=エラーと削除のみ
- * - 角丸：入力・ボタン・カードとも 8px(rounded-lg)／12px(rounded-xl) の2種類だけ
+ * - 色：朱(brand)=操作、墨(navy)=見出し・選択中、緑=確定、黄=修正中、赤=エラーと削除。下書きは無彩色
+ * - 角丸：入力・ボタンは 4px(rounded-lg)、枠は 6px(rounded-xl) の2種類だけ
  * - 影：使わない（区切りは罫線）
  * - 文字：本文 15〜16px、補足 13px 以上
  * - ボタン高さ：sm 40px／md 44px／lg 52px（指で押せる大きさを下回らない）
@@ -103,7 +103,7 @@ export function PageHeader({ title, description, actions, back }: { title: strin
 }
 
 const inputBase =
-  "block w-full rounded-lg border border-slate-300 bg-white px-3.5 text-[16px] text-slate-900 placeholder:text-slate-400 focus:border-brand-600 focus:outline-none focus:ring-3 focus:ring-brand-100 disabled:bg-slate-50 disabled:text-slate-700 aria-[invalid=true]:border-red-500";
+  "block w-full rounded-lg border border-slate-300 bg-white px-3.5 text-[16px] text-slate-900 placeholder:text-slate-400 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-100 disabled:bg-slate-50 disabled:text-slate-700 aria-[invalid=true]:border-red-500";
 
 export function Input({ className, ...props }: ComponentProps<"input">) {
   return <input {...props} className={cn(inputBase, "h-12", className)} />;
@@ -158,7 +158,7 @@ export function Field({
 
 export function Alert({ tone = "info", children, className }: { tone?: "info" | "success" | "error" | "warn"; children: ReactNode; className?: string }) {
   const styles = {
-    info: "bg-brand-50 text-navy-900 border-brand-100",
+    info: "bg-white text-navy-900 border-slate-300 border-l-4 border-l-navy-900",
     success: "bg-emerald-50 text-emerald-900 border-emerald-200",
     error: "bg-red-50 text-red-800 border-red-200",
     warn: "bg-amber-50 text-amber-900 border-amber-200",
@@ -197,7 +197,8 @@ export function EmptyState({ title, description, action }: { title: string; desc
 /** 報告書の状態表示。用語は「下書き」「修正中」「確定」の3つに統一 */
 export function StatusBadge({ status, version }: { status: string; version?: number }) {
   if (status === "final") return <Badge tone="green">確定{version && version > 1 ? `・第${version}版` : ""}</Badge>;
-  return <Badge tone="amber">{version && version > 0 ? "修正中" : "下書き"}</Badge>;
+  if (version && version > 0) return <Badge tone="amber">修正中</Badge>;
+  return <Badge tone="slate">下書き</Badge>;
 }
 
 /** 絞り込みの切り替え（一覧画面で共通） */

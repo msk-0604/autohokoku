@@ -32,8 +32,8 @@ export type PdfLayout = (typeof PDF_LAYOUTS)[number];
 export type PdfOrg = { name: string; address: string | null; phone: string | null; postalCode: string | null; email: string | null; logo: { data: Buffer; format: "jpg" | "png" } | null };
 export type PdfPhoto = ReportSnapshot["photos"][number] & { image: { data: Buffer; format: "jpg" | "png" } | null };
 
-const NAVY = "#0f2a4a";
-const BLUE = "#2563eb";
+const NAVY = "#161b22";
+const BLUE = "#c2410c";
 const LINE = "#cbd5e1";
 const MUTED = "#64748b";
 
@@ -57,7 +57,7 @@ const s = StyleSheet.create({
   td: { flex: 1, paddingVertical: 5, paddingHorizontal: 6 },
   tdBorder: { borderRightWidth: 1, borderRightColor: LINE },
   section: { marginBottom: 10 },
-  sectionTitle: { fontSize: 10.5, fontWeight: 700, color: NAVY, borderLeftWidth: 3, borderLeftColor: BLUE, paddingLeft: 6, marginBottom: 4 },
+  sectionTitle: { fontSize: 10.5, fontWeight: 700, color: NAVY, borderLeftWidth: 3, borderLeftColor: NAVY, paddingLeft: 6, marginBottom: 4 },
   box: { borderWidth: 1, borderColor: LINE, borderRadius: 3, padding: 8, minHeight: 28 },
   photoRow: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
   gridCard: { width: "49%", marginBottom: 10, borderWidth: 1, borderColor: LINE, borderRadius: 3, padding: 5 },

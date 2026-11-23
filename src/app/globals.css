@@ -1,21 +1,50 @@
+@import "@fontsource/ibm-plex-sans-jp/400.css";
+@import "@fontsource/ibm-plex-sans-jp/500.css";
+@import "@fontsource/ibm-plex-sans-jp/600.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
 @import "tailwindcss";
 
+/*
+ * Stark Report デザイン基準
+ * - 基調：墨色（ink）。見出し・サイドバー・選択状態に使う
+ * - 操作色：朱色（安全色）1色のみ。ボタン・リンク・選択中の印に使う
+ * - 状態色：緑＝確定、黄＝修正中、赤＝エラー・削除。それ以外の色は使わない
+ * - 角丸は小さく（3〜6px）、影は使わない。区切りは1pxの罫線
+ * - 本文は IBM Plex Sans JP、番号・日付・金額は IBM Plex Mono（等幅で桁が揃う）
+ *
+ * 既存の部品が使っている名前（navy / brand）を、そのまま新しい色に割り当てている
+ */
 @theme {
-  --color-navy-50: #f0f4fa;
-  --color-navy-100: #dde6f3;
-  --color-navy-200: #b9cbe5;
-  --color-navy-600: #24497a;
-  --color-navy-700: #1a3a63;
-  --color-navy-800: #142f52;
-  --color-navy-900: #0f2a4a;
-  --color-navy-950: #0a1d34;
-  --color-brand-50: #eff5ff;
-  --color-brand-100: #dbe8fe;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-surface: #f5f7fb;
-  --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic UI", "Yu Gothic", Meiryo, system-ui, sans-serif;
+  /* 墨色（旧 navy） */
+  --color-navy-50: #f3f4f5;
+  --color-navy-100: #e3e5e8;
+  --color-navy-200: #c6cad1;
+  --color-navy-600: #3b434f;
+  --color-navy-700: #2b323c;
+  --color-navy-800: #1f252d;
+  --color-navy-900: #161b22;
+  --color-navy-950: #0e1116;
+  /* 朱色（旧 brand）。白文字とのコントラスト比 4.5 以上を確保した濃さ */
+  --color-brand-50: #fdf1ea;
+  --color-brand-100: #f9dccb;
+  --color-brand-500: #dd5a1f;
+  --color-brand-600: #c2410c;
+  --color-brand-700: #9a3412;
+  --color-surface: #f3f3f2;
+
+  --font-sans: "IBM Plex Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "IBM Plex Sans JP", ui-monospace, monospace;
+
+  /* 太字は 600（700 だと日本語が重く見える） */
+  --font-weight-bold: 600;
+
+  /* 角丸は小さく */
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+  --radius-2xl: 8px;
+
   /* 補足文字の最小サイズを 13px にする（12px は現場で読みにくい） */
   --text-xs: 0.8125rem;
   --text-xs--line-height: 1.55;
@@ -32,10 +61,17 @@ html {
 
 body {
   background: var(--color-surface);
-  color: #0f172a;
+  color: #161b22;
   font-family: var(--font-sans);
   font-feature-settings: "palt";
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+}
+
+/* 番号・日付・金額は等幅で桁を揃える */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
 }
 
 /* iOS で入力時にズームされないよう 16px 以上にする */

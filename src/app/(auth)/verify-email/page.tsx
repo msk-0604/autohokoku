@@ -13,7 +13,7 @@ export default async function VerifyEmailPage() {
   if (ctx.user.emailVerified) redirect("/app");
   return (
     <div className="text-center">
-      <div className="mx-auto mb-4 w-fit rounded-2xl bg-brand-50 p-3 text-brand-700">
+      <div className="mx-auto mb-4 w-fit text-navy-900">
         <MailCheck className="size-8" />
       </div>
       <h1 className="text-xl font-bold text-navy-900">確認メールを送信しました</h1>

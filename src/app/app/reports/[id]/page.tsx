@@ -43,7 +43,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
         description={
           <span className="flex flex-wrap items-center gap-2">
             <StatusBadge status={rep.status} version={rep.version} />
-            <span className="tabular-nums">{rep.reportNumber}</span>
+            <span className="num">{rep.reportNumber}</span>
           </span>
         }
       />
